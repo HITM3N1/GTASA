@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
+using GTASA.SymulationGeneric;
 
 namespace GTASA
 {
@@ -8,6 +8,7 @@ namespace GTASA
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
+        private Symulation symulation;
 
         public Game1()
         {
@@ -18,7 +19,7 @@ namespace GTASA
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
+            symulation = new Symulation();
 
             base.Initialize();
         }
@@ -27,15 +28,13 @@ namespace GTASA
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
+            symulation.LoadContent();
+
         }
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
-
-            // TODO: Add your update logic here
+            symulation.Update();
 
             base.Update(gameTime);
         }
@@ -44,7 +43,7 @@ namespace GTASA
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // TODO: Add your drawing code here
+            symulation.Draw(_spriteBatch);
 
             base.Draw(gameTime);
         }
