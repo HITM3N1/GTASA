@@ -15,6 +15,11 @@ namespace GTASA
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+
+            _graphics.IsFullScreen = false;
+            _graphics.PreferredBackBufferWidth = Essentials.mapSize * 16 * (int)Essentials.RENDER_ZOOM;
+            _graphics.PreferredBackBufferHeight = Essentials.mapSize * 16 * (int)Essentials.RENDER_ZOOM;
+            _graphics.ApplyChanges();
         }
 
         protected override void Initialize()
@@ -28,7 +33,7 @@ namespace GTASA
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            symulation.LoadContent();
+            symulation.LoadContent(this.Content);
 
         }
 
