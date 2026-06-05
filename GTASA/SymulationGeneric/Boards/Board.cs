@@ -27,6 +27,11 @@ namespace GTASA.SymulationGeneric.Boards
             this.citizens = citizens;
         }
 
+        public void SetCitizens(Citizens citizens)
+        {
+            this.citizens = citizens;
+        }
+
         public void Initialize()
         {
             for (int x = 0; x < size; x++)
@@ -151,19 +156,19 @@ namespace GTASA.SymulationGeneric.Boards
             {
                 for (int y = 0; y < size; y++)
                 {
-                    if (grid[x, y].GetType() == CellType.EmptyCell)
+                    if (grid[x, y].GetCellType() == CellType.EmptyCell)
                     {
                         int subx = x;
                         int suby = y;
 
-                        while (subx < size && grid[subx, suby].GetType() == CellType.EmptyCell)
+                        while (subx < size && grid[subx, suby].GetCellType() == CellType.EmptyCell)
                         {
                             subx++;
                         }
 
                         subx--;
 
-                        while (suby < size && grid[subx, suby].GetType() == CellType.EmptyCell)
+                        while (suby < size && grid[subx, suby].GetCellType() == CellType.EmptyCell)
                         {
                             suby++;
                         }
@@ -199,9 +204,9 @@ namespace GTASA.SymulationGeneric.Boards
             {
                 int nx = tx + dx[i];
                 int ny = ty + dy[i];
-                if (InBounds(nx, ny) && grid[nx, ny].GetType() == CellType.Pavment)
+                if (InBounds(nx, ny) && grid[nx, ny].GetCellType() == CellType.Pavment)
                 {
-                    neighbors.Add(new Vector2(nx * Essentials.cellSize / 2f, ny * Essentials.cellSize / 2f));
+                    neighbors.Add(new Vector2(nx * Essentials.cellSize, ny * Essentials.cellSize));
                 }
             }
             return neighbors;

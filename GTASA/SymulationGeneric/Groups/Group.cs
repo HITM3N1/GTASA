@@ -3,6 +3,8 @@ using GTASA.SymulationGeneric.Groups.Agents;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
+using System.Linq;
+using GTASA.SymulationGeneric;
 namespace GTASA.SymulationGeneric.Groups
 {
     public interface GroupAbstract
@@ -36,6 +38,11 @@ namespace GTASA.SymulationGeneric.Groups
                 agent.Draw(spriteBatch);
             }
         }
+
+        public List<Vector2> GetAgentPositions()
+        {
+            return agents.Select(a => a.GetPosition()).ToList();
+        }
     }
 
     public class Police : Group
@@ -52,7 +59,7 @@ namespace GTASA.SymulationGeneric.Groups
             this.board = board;
             for (int i = 0; i < agentCount; i++)
             {
-                agents.Add(new Agent(this, board.GetRandomPavment()));
+                agents.Add(new Agent(this, board.GetRandomPavment(), board));
             }
         }
     }
@@ -70,15 +77,44 @@ namespace GTASA.SymulationGeneric.Groups
             this.board = board;
             for (int i = 0; i < agentCount; i++)
             {
-                agents.Add(new Agent(this, board.GetRandomPavment()));
+                agents.Add(new Agent(this, board.GetRandomPavment(), board));
             }
         }
 
         public void Update(GameTime gameTime, List<Vector2> gangPositions)
         {
+            System.Diagnostics.Debug.WriteLine("Citizens.Update wywołane");
+
             float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
+            foreach (Agent agent in agents)
+            {
+                Vector2? nearestGang = FindNearestGang(agent.GetPosition(), gangPositions);
+                    if (nearestGang.HasValue)
+                        agent.Flee(nearestGang.Value, dt);
+                    else
+                        agent.Wander(dt);
+            }
         }
+
+        private Vector2? FindNearestGang(Vector2 agentPosition, List<Vector2> gangPositions)
+        {
+            Vector2? nearest = null;
+            float minDist = Essentials.fleeDistance;
+
+            foreach (Vector2 gangPos in gangPositions)
+            {
+                float dist = Vector2.Distance(agentPosition, gangPos);
+                if (dist < minDist)
+                {
+                    minDist = dist;
+                    nearest = gangPos;
+                }
+            }
+            return nearest;
+        }
+
+
     }
 
     public class Gang : Group
@@ -96,7 +132,7 @@ namespace GTASA.SymulationGeneric.Groups
 
             for (int i = 0; i < agentCount; i++)
             {
-                agents.Add(new Agent(this, groupBase));
+                agents.Add(new Agent(this, groupBase, board));
             }
         }
     }

@@ -12,10 +12,14 @@ namespace GTASA.SymulationGeneric
         public static int cellSize = 16;
         public static int gangsCount = 2;
 
+        public static float speed = 60f;
+        public static float fleespeed = 130f;
+        public static float fleeDistance = 80f;
+
         public static bool NEW_RENDER = true;
         public static float RENDER_ZOOM = 2f;
 
-        public static GroupColor PoliceColor = GroupColor.White;
+        public static GroupColor PoliceColor = GroupColor.Blue;
         public static GroupColor CitizensColor = GroupColor.White;
 
 

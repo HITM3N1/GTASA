@@ -49,7 +49,7 @@ namespace GTASA.SymulationGeneric.Boards.Cells
             spriteBatch.Draw(Essentials.texturesPavment[textureType], bounds, Color.White);
         }
 
-        public CellType GetType()
+        public CellType GetCellType()
         {
             return type;
         }

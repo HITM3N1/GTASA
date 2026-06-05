@@ -4,7 +4,7 @@ namespace GTASA.SymulationGeneric.Boards.Cells
 {
     public class EmptyCell : Cell
     {
-        public CellType GetType()
+        public CellType GetCellType()
         {
             return CellType.EmptyCell;
         }

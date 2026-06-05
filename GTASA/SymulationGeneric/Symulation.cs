@@ -22,14 +22,15 @@ namespace GTASA.SymulationGeneric
             cameraMatrix = Matrix.CreateScale(Essentials.RENDER_ZOOM, Essentials.RENDER_ZOOM, 1f);
             gangs = new List<Gang>();
 
-            citizens = new Citizens(5, tab);
             tab = new Board(Essentials.mapSize, citizens);
             tab.Initialize();
 
-            
+            citizens = new Citizens(5, tab);
+            tab.SetCitizens(citizens);
+
             police = new Police(3, tab);
-
-
+            
+            
             gangs.Add(new Gang(2, GroupColor.Red, tab));
             gangs.Add(new Gang(1, GroupColor.Green, tab));
 
@@ -52,12 +53,17 @@ namespace GTASA.SymulationGeneric
             Essentials.LoadContent(contentManager);
         }
 
-        public void Update()
+        public void Update(GameTime gameTime)
         {
-            
+            System.Diagnostics.Debug.WriteLine("Symulation.Update wywołane");
 
             tab.Update();
 
+            List<Vector2> gangPositions = new List<Vector2>();
+            foreach (Gang gang in gangs)
+                gangPositions.AddRange(gang.GetAgentPositions());
+
+            citizens.Update(gameTime, gangPositions);
         }
 
         

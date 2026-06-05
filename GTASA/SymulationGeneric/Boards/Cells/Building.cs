@@ -22,21 +22,14 @@ namespace GTASA.SymulationGeneric.Boards.Cells
             this.bounds = bounds;
         }
 
-        public CellType GetType()
+        public CellType GetCellType()
         {
             return type;
         }
 
         public bool Isfree()
         {
-            if (occupation.GetColor() == GroupColor.White) 
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return occupation == null;
         }
 
         public void SetOccupation(Group group)
@@ -51,34 +44,36 @@ namespace GTASA.SymulationGeneric.Boards.Cells
 
         public void Draw(SpriteBatch spriteBatch)
         {
+            GroupColor color = occupation != null ? occupation.GetColor() : GroupColor.White;
+
             for (int x = bounds.X; x < bounds.Width; x++)
             {
                 for (int y = bounds.Y; y < bounds.Height; y++)
                 {
                     if (x > bounds.X && y > bounds.Y && x < bounds.Width - 1 && y < bounds.Height - 1)
                     {
-                        spriteBatch.Draw(Essentials.texturesBuilding[(TextureType.B0, occupation.GetColor())], new Vector2(16 * x, 16 * y), Color.White);
+                        spriteBatch.Draw(Essentials.texturesBuilding[(TextureType.B0, color)], new Vector2(16 * x, 16 * y), Color.White);
                     }
                     else
                     {
                         if (x == bounds.X)
                         {
-                            spriteBatch.Draw(Essentials.texturesBuilding[(TextureType.B8, occupation.GetColor())], new Vector2(16 * x, 16 * y), Color.White);
+                            spriteBatch.Draw(Essentials.texturesBuilding[(TextureType.B8, color)], new Vector2(16 * x, 16 * y), Color.White);
                         }
 
                         if (x == (bounds.Width - 1))
                         {
-                            spriteBatch.Draw(Essentials.texturesBuilding[(TextureType.B4, occupation.GetColor())], new Vector2(16 * x, 16 * y), Color.White);
+                            spriteBatch.Draw(Essentials.texturesBuilding[(TextureType.B4, color)], new Vector2(16 * x, 16 * y), Color.White);
                         }
 
                         if (y == bounds.Y)
                         {
-                            spriteBatch.Draw(Essentials.texturesBuilding[(TextureType.B2, occupation.GetColor())], new Vector2(16 * x, 16 * y), Color.White);
+                            spriteBatch.Draw(Essentials.texturesBuilding[(TextureType.B2, color)], new Vector2(16 * x, 16 * y), Color.White);
                         }
 
                         if (y == (bounds.Height - 1))
                         {
-                            spriteBatch.Draw(Essentials.texturesBuilding[(TextureType.B6, occupation.GetColor())], new Vector2(16 * x, 16 * y), Color.White);
+                            spriteBatch.Draw(Essentials.texturesBuilding[(TextureType.B6, color)], new Vector2(16 * x, 16 * y), Color.White);
                         }
 
 
@@ -86,22 +81,22 @@ namespace GTASA.SymulationGeneric.Boards.Cells
 
                         if (x == bounds.X && y == bounds.Y)
                         {
-                            spriteBatch.Draw(Essentials.texturesBuilding[(TextureType.B1, occupation.GetColor())], new Vector2(16 * x, 16 * y), Color.White);
+                            spriteBatch.Draw(Essentials.texturesBuilding[(TextureType.B1, color)], new Vector2(16 * x, 16 * y), Color.White);
                         }
 
                         if (x == bounds.Width - 1 && y == bounds.Y)
                         {
-                            spriteBatch.Draw(Essentials.texturesBuilding[(TextureType.B3, occupation.GetColor())], new Vector2(16 * x, 16 * y), Color.White);
+                            spriteBatch.Draw(Essentials.texturesBuilding[(TextureType.B3, color)], new Vector2(16 * x, 16 * y), Color.White);
                         }
 
                         if (x == bounds.Width - 1 && y == bounds.Height - 1)
                         {
-                            spriteBatch.Draw(Essentials.texturesBuilding[(TextureType.B5, occupation.GetColor())], new Vector2(16 * x, 16 * y), Color.White);
+                            spriteBatch.Draw(Essentials.texturesBuilding[(TextureType.B5, color)], new Vector2(16 * x, 16 * y), Color.White);
                         }
 
                         if (x == bounds.X && y == bounds.Height - 1)
                         {
-                            spriteBatch.Draw(Essentials.texturesBuilding[(TextureType.B7, occupation.GetColor())], new Vector2(16 * x, 16 * y), Color.White);
+                            spriteBatch.Draw(Essentials.texturesBuilding[(TextureType.B7, color)], new Vector2(16 * x, 16 * y), Color.White);
                         }
                         
                     }

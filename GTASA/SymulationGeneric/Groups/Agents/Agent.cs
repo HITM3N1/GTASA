@@ -11,16 +11,25 @@ namespace GTASA.SymulationGeneric.Groups.Agents
     {
         GroupAbstract group;
         Vector2 position;
-        private Vector2 nextTileCenter;
-        private float speed = 60f;
-        private float fleeSpeed = 130f;
+        private Vector2 nextCellCenter;
+        private float speed = Essentials.speed;
+        private float fleeSpeed = Essentials.fleespeed;
         private Random rng;
         Board board;
 
-        public Agent(GroupAbstract group, Vector2 startPosition) 
-        { 
+        public Agent(GroupAbstract group, Vector2 startPosition, Board board) 
+        {
+            System.Diagnostics.Debug.WriteLine($"startPosition: {startPosition}");
             this.group = group;
             this.position = startPosition;
+            this.nextCellCenter = startPosition;
+            this.board = board;
+            this.rng = new Random();
+        }
+
+        public Vector2 GetPosition()
+        {
+            return position;
         }
 
         public void Draw(SpriteBatch spriteBatch)
@@ -30,25 +39,31 @@ namespace GTASA.SymulationGeneric.Groups.Agents
 
         public void Wander(float dt)
         {
-            if (Vector2.Distance(position, nextTileCenter) < 2f)
+
+            System.Diagnostics.Debug.WriteLine($"position: {position}, nextTileCenter: {nextCellCenter}");
+
+            if (Vector2.Distance(position, nextCellCenter) < 2f)
             {
                 List<Vector2> neighbors = board.GetNeighborPavements(position);
+                
                 if (neighbors.Count == 0) return;
-                nextTileCenter = neighbors[rng.Next(neighbors.Count)];
+                nextCellCenter = neighbors[rng.Next(neighbors.Count)];
+               
             }
-            MoveTowards(nextTileCenter, speed, dt);
+
+            MoveTowards(nextCellCenter, speed, dt);
         }
 
         public void Flee(Vector2 gangPosition, float dt)
         {
-            if (Vector2.Distance(position, nextTileCenter) < 2f)
+            if (Vector2.Distance(position, nextCellCenter) < 2f)
             {
                 List<Vector2> neighbors = board.GetNeighborPavements(position);
                 if (neighbors.Count == 0) return;
-                nextTileCenter = neighbors.OrderByDescending(n => Vector2.Distance(n, gangPosition)).First();
+                nextCellCenter = neighbors.OrderByDescending(n => Vector2.Distance(n, gangPosition)).First();
             }
 
-            MoveTowards(nextTileCenter, fleeSpeed, dt);
+            MoveTowards(nextCellCenter, fleeSpeed, dt);
         }
 
         private void MoveTowards(Vector2 target, float speed, float dt)
