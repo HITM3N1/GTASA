@@ -27,10 +27,10 @@ namespace GTASA.SymulationGeneric
             tab.Initialize();
 
             
-            police = new Police(10, tab);
+            police = new Police(3, tab);
 
 
-            gangs.Add(new Gang(1, GroupColor.Red, tab));
+            gangs.Add(new Gang(2, GroupColor.Red, tab));
             gangs.Add(new Gang(1, GroupColor.Green, tab));
 
 
@@ -40,6 +40,10 @@ namespace GTASA.SymulationGeneric
             }
 
             citizens.Initialize(tab);
+            police.Initialize(tab);
+
+            
+            
 
         }
 
@@ -50,8 +54,13 @@ namespace GTASA.SymulationGeneric
 
         public void Update()
         {
+            
+
             tab.Update();
+
         }
+
+        
 
         public void Draw(SpriteBatch spriteBatch)
         {
@@ -64,6 +73,7 @@ namespace GTASA.SymulationGeneric
             }
 
             citizens.Draw(spriteBatch);
+            police.Draw(spriteBatch);
             spriteBatch.End();
         }
     }

@@ -21,11 +21,11 @@ namespace GTASA.SymulationGeneric.Groups
         public GroupColor GetColor() { return color; }
 
       
-        protected Group(GroupColor color, int agentcout, Board board)
+        protected Group(GroupColor color, int agentcount, Board board)
         {
             agents = new List<Agent>();
             this.color = color;
-            this.agentCount = agentcout;
+            this.agentCount = agentcount;
             this.board = board;
         }
 
@@ -41,19 +41,7 @@ namespace GTASA.SymulationGeneric.Groups
     public class Police : Group
     {
 
-        public Police(int agentCout, Board board) : base(Essentials.PoliceColor, agentCout, board) 
-        {
-            
-
-
-
-           
-        }
-    }
-
-    public class Citizens : Group
-    {
-        public Citizens(int agentCout, Board board) : base(Essentials.CitizensColor, agentCout, board)
+        public Police(int agentCount, Board board) : base(Essentials.PoliceColor, agentCount, board)
         {
 
 
@@ -69,11 +57,35 @@ namespace GTASA.SymulationGeneric.Groups
         }
     }
 
+    public class Citizens : Group
+    {
+        public Citizens(int agentCount, Board board) : base(Essentials.CitizensColor, agentCount, board)
+        {
+
+
+        }
+
+        public void Initialize(Board board)
+        {
+            this.board = board;
+            for (int i = 0; i < agentCount; i++)
+            {
+                agents.Add(new Agent(this, board.GetRandomPavment()));
+            }
+        }
+
+        public void Update(GameTime gameTime, List<Vector2> gangPositions)
+        {
+            float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+        }
+    }
+
     public class Gang : Group
     {
         private Vector2 groupBase;
 
-        public Gang(int agentCout, GroupColor color, Board board ) : base(color, agentCout, board)
+        public Gang(int agentCount, GroupColor color, Board board ) : base(color, agentCount, board)
         {
            
         }

@@ -185,5 +185,28 @@ namespace GTASA.SymulationGeneric.Boards
                 }
             }
         }
+
+        public List<Vector2> GetNeighborPavements(Vector2 position)
+        {
+            int tx = (int)(position.X / Essentials.cellSize);
+            int ty = (int)(position.Y / Essentials.cellSize);
+
+            var neighbors = new List<Vector2>();
+            int[] dx = { -1, 0, 1, 0 };
+            int[] dy = { 0, -1, 0, 1 };
+
+            for (int i = 0; i < 4; i++)
+            {
+                int nx = tx + dx[i];
+                int ny = ty + dy[i];
+                if (InBounds(nx, ny) && grid[nx, ny].GetType() == CellType.Pavment)
+                {
+                    neighbors.Add(new Vector2(nx * Essentials.cellSize / 2f, ny * Essentials.cellSize / 2f));
+                }
+            }
+            return neighbors;
+        }
+
+        private bool InBounds(int x, int y) => x >= 0 && x < size && y >= 0 && y < size;
     }
 }
