@@ -64,6 +64,7 @@ namespace GTASA.SymulationGeneric
                 gangPositions.AddRange(gang.GetAgentPositions());
 
             citizens.Update(gameTime, gangPositions);
+            police.Update(gameTime);
         }
 
         

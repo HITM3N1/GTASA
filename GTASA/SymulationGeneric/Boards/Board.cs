@@ -191,25 +191,22 @@ namespace GTASA.SymulationGeneric.Boards
             }
         }
 
-        public List<Vector2> GetNeighborPavements(Vector2 position)
+        public Vector2? GetNeighborInDirection(Vector2 position, int directionIndex)
         {
             int tx = (int)(position.X / Essentials.cellSize);
             int ty = (int)(position.Y / Essentials.cellSize);
 
-            var neighbors = new List<Vector2>();
             int[] dx = { -1, 0, 1, 0 };
             int[] dy = { 0, -1, 0, 1 };
 
-            for (int i = 0; i < 4; i++)
+            int nx = tx + dx[directionIndex];
+            int ny = ty + dy[directionIndex];
+
+            if (InBounds(nx, ny) && grid[nx, ny].GetCellType() == CellType.Pavment)
             {
-                int nx = tx + dx[i];
-                int ny = ty + dy[i];
-                if (InBounds(nx, ny) && grid[nx, ny].GetCellType() == CellType.Pavment)
-                {
-                    neighbors.Add(new Vector2(nx * Essentials.cellSize, ny * Essentials.cellSize));
-                }
+                return new Vector2(nx * Essentials.cellSize, ny * Essentials.cellSize);
             }
-            return neighbors;
+            return null;
         }
 
         private bool InBounds(int x, int y) => x >= 0 && x < size && y >= 0 && y < size;

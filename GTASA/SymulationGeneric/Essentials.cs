@@ -14,7 +14,7 @@ namespace GTASA.SymulationGeneric
 
         public static float speed = 60f;
         public static float fleespeed = 130f;
-        public static float fleeDistance = 80f;
+        public static float fleeDistance = 100f;
 
         public static bool NEW_RENDER = true;
         public static float RENDER_ZOOM = 2f;

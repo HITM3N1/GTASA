@@ -14,6 +14,7 @@ namespace GTASA.SymulationGeneric.Groups.Agents
         private Vector2 nextCellCenter;
         private float speed = Essentials.speed;
         private float fleeSpeed = Essentials.fleespeed;
+        private int currentDirection = 0; // 0: left, 1: up, 2: right, 3: down
         private Random rng;
         Board board;
 
@@ -40,14 +41,58 @@ namespace GTASA.SymulationGeneric.Groups.Agents
         public void Wander(float dt)
         {
 
-            System.Diagnostics.Debug.WriteLine($"position: {position}, nextTileCenter: {nextCellCenter}");
-
             if (Vector2.Distance(position, nextCellCenter) < 2f)
             {
-                List<Vector2> neighbors = board.GetNeighborPavements(position);
-                
-                if (neighbors.Count == 0) return;
-                nextCellCenter = neighbors[rng.Next(neighbors.Count)];
+                position = nextCellCenter;
+                Vector2? straight = board.GetNeighborInDirection(position, currentDirection);
+                if (straight.HasValue && rng.Next(4) != 0)
+                {
+                    nextCellCenter = straight.Value;
+                }
+                else
+                {
+                    int oppositeDirection = (currentDirection + 2) % 4;
+                    List<int> available = new List<int>();
+
+                    for (int i = 0; i < 4; i++)
+                    {
+                        if (i == oppositeDirection) continue;
+
+                        Vector2? neighbor = board.GetNeighborInDirection(position, i);
+                        if (neighbor.HasValue)
+                        {
+                            available.Add(i);
+                        }
+                    }
+
+                    if (available.Count > 0)
+                    {
+                        currentDirection = available[rng.Next(available.Count)];
+                        nextCellCenter = board.GetNeighborInDirection(position, currentDirection)!.Value;
+                    }
+                    else
+                    {
+                        currentDirection = oppositeDirection;
+                        Vector2? back = board.GetNeighborInDirection(position, currentDirection);
+                        if (back.HasValue)
+                        {
+                            nextCellCenter = back.Value;
+                        }
+                        else
+                        {
+                            for (int i = 0; i < 4; i++)
+                            {
+                                Vector2? any = board.GetNeighborInDirection(position, i);
+                                if (any.HasValue)
+                                {
+                                    currentDirection = i;
+                                    nextCellCenter = any.Value;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
                
             }
 
@@ -58,9 +103,22 @@ namespace GTASA.SymulationGeneric.Groups.Agents
         {
             if (Vector2.Distance(position, nextCellCenter) < 2f)
             {
-                List<Vector2> neighbors = board.GetNeighborPavements(position);
-                if (neighbors.Count == 0) return;
-                nextCellCenter = neighbors.OrderByDescending(n => Vector2.Distance(n, gangPosition)).First();
+                List<int> available = new List<int>();
+                for (int i = 0; i < 4; i++)
+                {
+                    Vector2? neighbor = board.GetNeighborInDirection(position, i);
+                    if (neighbor.HasValue)
+                    {
+                        available.Add(i);
+                    }
+                }
+
+                if (available.Count > 0)
+                {
+                    currentDirection = available.OrderByDescending(i => Vector2.Distance(board.GetNeighborInDirection(position, i)!.Value, gangPosition)).First();
+
+                    nextCellCenter = board.GetNeighborInDirection(position, currentDirection)!.Value;
+                }
             }
 
             MoveTowards(nextCellCenter, fleeSpeed, dt);

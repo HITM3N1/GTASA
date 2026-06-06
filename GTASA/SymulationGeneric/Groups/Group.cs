@@ -62,6 +62,16 @@ namespace GTASA.SymulationGeneric.Groups
                 agents.Add(new Agent(this, board.GetRandomPavment(), board));
             }
         }
+
+        public void Update(GameTime gameTime)
+        {
+            System.Diagnostics.Debug.WriteLine("Police.Update wywołane");
+            float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            foreach (Agent agent in agents)
+            {
+                agent.Wander(dt);
+            }
+        }
     }
 
     public class Citizens : Group
