@@ -95,5 +95,35 @@ namespace GTASA.SymulationGeneric.Boards.Cells
             pavmentsNearby[direction] = cell;
         }
 
+        public void CallAgents(int k, Group group, Queue<Vector2> pathToTarget, HashSet<Pavment> visited = null)
+        {
+            visited ??= new HashSet<Pavment>();
+
+            foreach (Agent agent in agentsInside)
+            {
+                if (group.agents.Contains(agent))
+                    agent.SetTargetPath(new Queue<Vector2>(pathToTarget));
+            }
+
+            if (k <= 0) return;
+
+            visited.Add(this);
+
+            for (int direction = 0; direction <= 3; direction++)
+            {
+                if (!pavmentsNearby.ContainsKey(direction)) continue;
+
+                Pavment neighbor = pavmentsNearby[direction];
+                if (visited.Contains(neighbor)) continue;
+
+                Queue<Vector2> extendedPath = new Queue<Vector2>();
+                extendedPath.Enqueue(GetAbsolutPosition());
+                foreach (Vector2 step in pathToTarget)
+                    extendedPath.Enqueue(step);
+
+                neighbor.CallAgents(k - 1, group, extendedPath, visited);
+            }
+        }
+
     }
 }
