@@ -15,11 +15,7 @@ namespace GTASA.SymulationGeneric.Boards
         private List<Pavment> pavments;
         private List<Building> buildings;
 
-        //private Queue<Cell> toDraw;
         private Citizens citizens;
-
-        //private List<Building> buildings;
-        //private List<Pavment> pavments;
 
         public Board (int size)
         {
@@ -29,7 +25,6 @@ namespace GTASA.SymulationGeneric.Boards
 
            buildings = new List<Building>();
            pavments = new List<Pavment>();
-           // toDraw = new Queue<Cell>();
         }
 
         public void Initialize(Citizens citizens)
@@ -207,11 +202,11 @@ namespace GTASA.SymulationGeneric.Boards
             }
         }
 
-        public void Update()
+        public void Update(GameTime gameTime)
         {
             foreach(Building building in buildings)
             {
-                building.Update();
+                building.Update(gameTime);
             }
         }
 
@@ -251,6 +246,21 @@ namespace GTASA.SymulationGeneric.Boards
             return result;
         }
 
+        public List<Building> GetAllBuildingsUnderAttack()
+        {
+            List<Building> result = new List<Building>();
+
+            foreach (Building building in buildings)
+            {
+                if (building.IsUnderAttack())
+                {
+                    result.Add(building);
+                }
+            }
+
+            return result;
+        }
+
 
 
         public Cell GetRandomPavment()
@@ -259,7 +269,23 @@ namespace GTASA.SymulationGeneric.Boards
             return pavments[random.Next(0, pavments.Count)];
         }
 
-        public Cell GetFreeBuilding(Group group)
+        public Cell GetRandomBorderPavment()
+        {
+            List<Pavment> borderPavments = new List<Pavment>(); 
+
+            foreach(Pavment pavment in pavments)
+            {
+                if(pavment.pavmentsNearby.Count == 1)
+                {
+                    borderPavments.Add(pavment);
+                }
+            }
+
+            Random random = new Random();
+            return borderPavments[random.Next(0, borderPavments.Count)];
+        }
+
+        public Building GetFreeSpawnBuilding(Group group)
         {
             Random random = new Random();
             int index = random.Next(0, buildings.Count);
@@ -270,6 +296,19 @@ namespace GTASA.SymulationGeneric.Boards
             }
 
             buildings[index].SetOccupation(group);
+            return buildings[index];
+        }
+
+        public Building GetRandomFreeBuilding(GroupAbstract groupAbstract)
+        {
+            Random random = new Random();
+            int index = random.Next(0, buildings.Count);
+
+            while (buildings[index].GetOccupation() == groupAbstract)
+            {
+                index = random.Next(0, buildings.Count);
+            }
+
             return buildings[index];
         }
 

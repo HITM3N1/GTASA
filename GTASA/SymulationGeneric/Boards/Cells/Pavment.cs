@@ -1,8 +1,10 @@
-﻿using GTASA.SymulationGeneric.Groups.Agents;
+﻿using GTASA.SymulationGeneric.Groups;
+using GTASA.SymulationGeneric.Groups.Agents;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace GTASA.SymulationGeneric.Boards.Cells
 {
@@ -47,6 +49,12 @@ namespace GTASA.SymulationGeneric.Boards.Cells
                 textureType = TextureType.P3;
             }
 
+        }
+
+
+        public List<Agent> GetAgents()
+        {
+            return agentsInside;
         }
 
         public void AddAgent(Agent agent)
@@ -95,14 +103,18 @@ namespace GTASA.SymulationGeneric.Boards.Cells
             pavmentsNearby[direction] = cell;
         }
 
-        public void CallAgents(int k, Group group, Queue<Vector2> pathToTarget, HashSet<Pavment> visited = null)
+        public void CallAgents(int k, Group group, Queue<Vector2> pathToTarget, HashSet<Pavment> visited)
         {
-            visited ??= new HashSet<Pavment>();
-
             foreach (Agent agent in agentsInside)
             {
-                if (group.agents.Contains(agent))
-                    agent.SetTargetPath(new Queue<Vector2>(pathToTarget));
+                if (group.GetAgents().Contains(agent))
+                {
+                    if(agent.CanBeMoved())
+                    {
+                        agent.SetTargetPath(new Queue<Vector2>(pathToTarget));
+                    }
+                }
+                   
             }
 
             if (k <= 0) return;

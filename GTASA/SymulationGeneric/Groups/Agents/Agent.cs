@@ -37,6 +37,12 @@ namespace GTASA.SymulationGeneric.Groups.Agents
         //Check if agent can get new target or is locked by interaction
         bool canBeMoved;
 
+        bool isBeingRecruted;
+
+        GroupAbstract newOccupation;
+
+        float recrutationTimmer;
+
         float moveTimer;
 
         Vector2 startPosition;
@@ -56,73 +62,166 @@ namespace GTASA.SymulationGeneric.Groups.Agents
             this.absolutPosition = spawnCell.GetSpawnAbsolutePosition();
             this.targetPath = new Queue<Vector2>();
             this.direction = null;
-            this.speed = Essentials.speed;
+            this.speed = Essentials.speed * group.GetSpeedModifier();
             this.isMoving = false;
             this.canBeMoved = true;
             this.moveTimer = 0f;
-
+            this.isBeingRecruted = false;
+            this.recrutationTimmer = 0f;
             this.hp = hp;
             this.strength = strength;
 
             spawnCell.AddAgent(this);
         }
 
-        public void Update(float dt)
+        public void Update(GameTime gameTime)
         {
-            if (targetPath.Count() == 0 && canBeMoved && !isMoving)
-            {
-                Wander();
-            }
+            float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
             
 
-            if (!isMoving && targetPath.Count() > 0)
+            if(isBeingRecruted)
             {
-                startPosition = absolutPosition;
-                targetPosition = targetPath.Dequeue();
-                moveTimer = 0f;
-                isMoving = true;
-            }
-
-            if (isMoving)
-            {
-                moveTimer += dt;
-
-                float t = moveTimer / speed;
-
-                if (t >= 1f)
+                if(recrutationTimmer ==  0f)
                 {
-                    absolutPosition = targetPosition;
-                    
-                    if(cell != board.GetCell(absolutPosition))
-                    {
-                        cell.RemoveAgent(this);
-                        cell = board.GetCell(absolutPosition);
-                        cell.AddAgent(this);
-                    }
+                    recrutationTimmer = (float)gameTime.TotalGameTime.TotalSeconds;
 
-                    isMoving = false;
+                    if(group != newOccupation)
+                    {
+                        newOccupation.AddAgent(this);
+                    }
                 }
                 else
                 {
-                    absolutPosition = Vector2.Lerp(startPosition, targetPosition, t);
+                    if((float)gameTime.TotalGameTime.TotalSeconds - recrutationTimmer > Essentials.GroupSettings.timeToRecrute)
+                    {
+                        group = newOccupation;
+                        UnlockAgent();
+                    }
                 }
             }
+            else
+            {
+                if (targetPath.Count() == 0 && canBeMoved && !isMoving)
+                {
+                    Wander();
+                }
 
 
+                if (!isMoving && targetPath.Count() > 0)
+                {
+                    startPosition = absolutPosition;
+                    targetPosition = targetPath.Dequeue();
+                    moveTimer = 0f;
+                    isMoving = true;
+                    canBeMoved = false;
+                }
+
+                if (isMoving)
+                {
+                    moveTimer += dt;
+
+                    float t = moveTimer / speed;
+
+                    if (t >= 1f)
+                    {
+                        absolutPosition = targetPosition;
+
+                        if (cell != board.GetCell(absolutPosition))
+                        {
+                            cell.RemoveAgent(this);
+                            cell = board.GetCell(absolutPosition);
+                            cell.AddAgent(this);
+                        }
+
+                        isMoving = false;
+                        moveTimer = 0f;
+
+                        if (targetPath.Count() == 0)
+                        {
+                            canBeMoved = true;
+                        }
+                    }
+                    else
+                    {
+                        absolutPosition = Vector2.Lerp(startPosition, targetPosition, t);
+                    }
+                }
+            }
            
 
             
 
         }
 
-        void SetTargetPath(Queue<Vector2> targetPath)
+        public GroupAbstract GetGroup()
+        {
+            return group;
+        }
+
+        public void SetTargetPath(Queue<Vector2> targetPath)
         {
             this.targetPath = targetPath;
         }
 
-        void LockAgent()
+        public void LockAgent(GroupAbstract occup)
         {
-            canBeMoved = false;
+            newOccupation = occup;
+            isBeingRecruted = true;
+        }
+
+        public bool IsBeingRecruted()
+        {
+            return isBeingRecruted;
+        }
+
+        public void UnlockAgent()
+        {
+            isBeingRecruted = false;
+            recrutationTimmer = 0f;
+        }
+
+        public void TryRecrute(Pavment actuallCell)
+        {
+            if (group is Police || group is Citizens)
+                return;
+
+            List<Agent> agentsNearby = new List<Agent>(actuallCell.GetAgents());
+
+            foreach (var pavment in actuallCell.pavmentsNearby)
+            {
+                agentsNearby.AddRange(pavment.Value.GetAgents());
+            }
+
+            List<Agent> citizensNearby = new List<Agent>();
+
+            foreach (Agent agent in agentsNearby)
+            {
+                if(agent.GetGroup() is Police)
+                {
+                    return;
+                }
+
+                if(agent.GetGroup() is Citizens && !agent.IsBeingRecruted())
+                {
+                    citizensNearby.Add(agent);
+                }
+            }
+
+            if (citizensNearby.Count > 0)
+            {
+                Random random = new Random();
+
+                int i = random.Next(0, 100);
+
+                if(i < Essentials.GroupSettings.RecrutationChance)
+                {
+                    Agent recrute = citizensNearby[random.Next(0, citizensNearby.Count)];
+
+                    recrute.LockAgent(group);
+                    LockAgent(group);
+                }
+            }
         }
 
         public void Wander()
@@ -132,6 +231,8 @@ namespace GTASA.SymulationGeneric.Groups.Agents
             if (cell.GetCellType() == CellType.Pavment)
             {
                 Pavment actuallCell = (Pavment)cell;
+
+                TryRecrute(actuallCell);
 
                 if (direction == null)
                 {
@@ -180,16 +281,38 @@ namespace GTASA.SymulationGeneric.Groups.Agents
                 }
             }
             else if(cell.GetCellType() == CellType.Building)
-            {
+            { 
                 Building building = (Building)cell;
 
-                int x = (random.Next(0, 2) == 0 ? 2 : -2) * random.Next(0,2);
-                int y = x == 0 ? (random.Next(0, 2) == 0 ? 2 : -2) : 0;
+                if(building.IsAttackEnded())
+                {
+                    if(absolutPosition == building.GetExitPos1())
+                    {
+                        targetPath.Enqueue(building.GetExitPos2());
+                    }
+                    else
+                    {
+                        targetPath.Enqueue(building.GetExitPos1());
+                    }
 
-                Vector2 target = Vector2.Clamp(new Vector2(x + absolutPosition.X, y + absolutPosition.Y), new Vector2(building.bounds.X * 16, building.bounds.Y * 16), new Vector2((building.bounds.Width - 1) * 16, (building.bounds.Height - 1) * 16));
+                    direction = null;
+                }
+                else
+                {
+                    int x = (random.Next(0, 2) == 0 ? 2 : -2) * random.Next(0, 2);
+                    int y = x == 0 ? (random.Next(0, 2) == 0 ? 2 : -2) : 0;
 
-                targetPath.Enqueue(target);
+                    Vector2 target = Vector2.Clamp(new Vector2(x + absolutPosition.X, y + absolutPosition.Y), new Vector2(building.bounds.X * 16, building.bounds.Y * 16), new Vector2((building.bounds.Width - 1) * 16, (building.bounds.Height - 1) * 16));
+
+                    targetPath.Enqueue(target);
+                }
+                
             }
+        }
+
+        public bool CanBeMoved()
+        {
+            return canBeMoved;
         }
 
 

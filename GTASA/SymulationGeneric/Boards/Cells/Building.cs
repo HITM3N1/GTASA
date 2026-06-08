@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using SharpDX.XAudio2;
 using System.Collections.Generic;
+using System.Reflection;
 
 
 namespace GTASA.SymulationGeneric.Boards.Cells
@@ -23,6 +24,14 @@ namespace GTASA.SymulationGeneric.Boards.Cells
 
         private GroupAbstract occupation;
 
+        private bool isAttackStarted;
+
+        private bool isUnderAttack;
+
+        private double timeWhenOcccupationStarted;
+
+        private bool isPoliceInside;
+
         public Building(Vector2 cords, Rectangle bounds, GroupAbstract occupation)
         {
             this.cords = cords;
@@ -31,9 +40,124 @@ namespace GTASA.SymulationGeneric.Boards.Cells
             this.hasExit = false;
             this.agentsInside = new List<Agent>();
             this.bounds = bounds;
+            this.isUnderAttack = false;
+            this.isPoliceInside = false;
+            this.timeWhenOcccupationStarted = 0;
         }
 
-        
+        public void CallAgents(int k, Group group)
+        {
+            exit.Item2.CallAgents(k, group, GetEntryPath(), new HashSet<Pavment>());
+        }
+
+        public void StartAttack()
+        {
+            isAttackStarted = true;
+        }
+
+        public bool IsPoliceInside()
+        {
+            return isPoliceInside;
+        }
+
+        public bool IsAttackEnded()
+        {
+            return !isAttackStarted;
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            if(isAttackStarted)
+            {
+                if (agentsInside.Count > 0)
+                {
+                    isUnderAttack = true;
+                }
+            }
+            
+
+            if(isUnderAttack)
+            {
+                HashSet<GroupAbstract> groupsInside = new HashSet<GroupAbstract>();
+                foreach (Agent agent in agentsInside)
+                {
+                    groupsInside.Add(agent.GetGroup());
+                    if(agent.GetGroup() is Police)
+                    {
+                        isPoliceInside = true;
+                    }
+                }
+
+                if (timeWhenOcccupationStarted == 0)
+                {
+                    timeWhenOcccupationStarted = gameTime.TotalGameTime.TotalSeconds;
+                }
+                else
+                {
+                    if (gameTime.TotalGameTime.TotalSeconds - timeWhenOcccupationStarted >= Essentials.GroupSettings.timeToOccupyBuilding)
+                    {
+                        Dictionary<GroupAbstract, List<Agent>> GangMembersCountInside = new Dictionary<GroupAbstract, List<Agent>>();
+
+                        foreach(GroupAbstract group  in groupsInside)
+                        {
+                            GangMembersCountInside[group] = new List<Agent>();
+                        }
+
+                        foreach (Agent agent in agentsInside)
+                        {
+                            GangMembersCountInside[agent.GetGroup()].Add(agent);
+                        }
+
+                        int max = -1;
+                        GroupAbstract winner = null;
+
+                        foreach(var pair in GangMembersCountInside)
+                        {
+                            if(pair.Value.Count > max)
+                            {
+                                winner = pair.Key;
+                            }
+                        }
+
+                        foreach(GroupAbstract groupAbstract in groupsInside)
+                        {
+                            if(groupAbstract is Police)
+                            {
+                                winner = groupAbstract;
+                            }
+                        }
+
+                        foreach (var pair in GangMembersCountInside)
+                        {
+                            if (pair.Key != winner)
+                            {
+                                foreach(Agent agent in pair.Value)
+                                {
+                                    pair.Key.RemoveAgent(agent);
+                                    agentsInside.Remove(agent);
+                                }
+                            }
+                        }
+
+
+                        occupation = winner;
+                        isUnderAttack = false;
+                        isAttackStarted = false;
+                        timeWhenOcccupationStarted = 0;
+                    }
+
+                }
+
+
+            }
+        }
+
+
+        public bool IsUnderAttack()
+        {
+            return this.isUnderAttack;
+        }
+
         public GroupAbstract GetOccupation()
         {
             return occupation;
@@ -78,9 +202,25 @@ namespace GTASA.SymulationGeneric.Boards.Cells
             return new Vector2 (bounds.X*16, bounds.Y*16);
         }
 
-        public void Update()
+        public Vector2 GetExitPos1()
         {
+            return exitAbsoultPosition;
+        }
 
+        public Vector2 GetExitPos2()
+        {
+            return exit.Item2.GetAbsolutPosition();
+        }
+
+        public Queue<Vector2> GetEntryPath()
+        {
+            Queue<Vector2> path = new Queue<Vector2>();
+
+            
+            path.Enqueue(exitAbsoultPosition);
+            path.Enqueue(GetSpawnAbsolutePosition());
+
+            return path;
         }
 
         public void AddAgent(Agent agent)
