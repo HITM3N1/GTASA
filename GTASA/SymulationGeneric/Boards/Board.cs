@@ -206,9 +206,13 @@ namespace GTASA.SymulationGeneric.Boards
                 return true;
             }
         }
+
         public void Update()
         {
-            
+            foreach(Building building in buildings)
+            {
+                building.Update();
+            }
         }
 
         public void Draw(SpriteBatch spriteBatch)
@@ -232,7 +236,20 @@ namespace GTASA.SymulationGeneric.Boards
        }
 
 
+        public List<Building> GetGangBuildings(GroupAbstract group)
+        {
+            List<Building> result = new List<Building>();
 
+            foreach (Building building in buildings)
+            {
+                if (building.GetOccupation() == group)
+                {
+                    result.Add(building);
+                }
+            }
+
+            return result;
+        }
 
 
 

@@ -21,8 +21,30 @@ namespace GTASA.SymulationGeneric
         public static bool NEW_RENDER = true;
         public static float RENDER_ZOOM = 2f;
 
-        public static GroupColor PoliceColor = GroupColor.Blue;
-        public static GroupColor CitizensColor = GroupColor.White;
+
+        public static class GroupSettings
+        {
+            public static GroupColor PoliceColor = GroupColor.Blue;
+            public static GroupColor CitizensColor = GroupColor.White;
+        }
+        
+
+
+        public static class AgentSettings
+        {
+            public static int GangMemberHP = 100;
+            public static int GangMemberStrength = 10;
+            public static int StenghtForKill = 5;
+
+            public static int PoliceHP = 10000;
+            public static int PoliceStrength = 10000;
+
+            public static int CitizensHP = 1;
+            public static int CitizensStrength = 0;
+
+            public static int Regeneration = 1;
+        }
+
 
 
         public static Dictionary<TextureType, Texture2D> texturesPavment = new Dictionary<TextureType, Texture2D>();

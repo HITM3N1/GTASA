@@ -49,7 +49,7 @@ namespace GTASA.SymulationGeneric.Groups
     public class Police : Group
     {
 
-        public Police(int agentCount, Board board) : base(Essentials.PoliceColor, agentCount, board)
+        public Police(int agentCount, Board board) : base(Essentials.GroupSettings.PoliceColor, agentCount, board)
         {
 
 
@@ -60,7 +60,7 @@ namespace GTASA.SymulationGeneric.Groups
             this.board = board;
             for (int i = 0; i < agentCount; i++)
             {
-                agents.Add(new Agent(this, board, board.GetRandomPavment()));
+                agents.Add(new Agent(this, board, board.GetRandomPavment(), Essentials.AgentSettings.PoliceHP, Essentials.AgentSettings.PoliceStrength));
             }
         }
 
@@ -77,7 +77,7 @@ namespace GTASA.SymulationGeneric.Groups
 
     public class Citizens : Group
     {
-        public Citizens(int agentCount, Board board) : base(Essentials.CitizensColor, agentCount, board)
+        public Citizens(int agentCount, Board board) : base(Essentials.GroupSettings.CitizensColor, agentCount, board)
         {
 
 
@@ -88,7 +88,7 @@ namespace GTASA.SymulationGeneric.Groups
             this.board = board;
             for (int i = 0; i < agentCount; i++)
             {
-                agents.Add(new Agent(this, board, board.GetRandomPavment()));
+                agents.Add(new Agent(this, board, board.GetRandomPavment(), Essentials.AgentSettings.CitizensHP, Essentials.AgentSettings.CitizensStrength));
             }
         }
 
@@ -136,7 +136,7 @@ namespace GTASA.SymulationGeneric.Groups
         {
             for (int i = 0; i < agentCount; i++)
             {
-                agents.Add(new Agent(this, board, groupBase));
+                agents.Add(new Agent(this, board, groupBase, Essentials.AgentSettings.GangMemberHP, Essentials.AgentSettings.GangMemberStrength));
             }
         }
 
@@ -149,5 +149,8 @@ namespace GTASA.SymulationGeneric.Groups
                 agent.Update(dt);
             }
         }
+
+        
+
     }
 }

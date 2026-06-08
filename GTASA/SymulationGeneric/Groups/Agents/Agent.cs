@@ -43,7 +43,12 @@ namespace GTASA.SymulationGeneric.Groups.Agents
 
         Vector2 targetPosition;
 
-        public Agent(GroupAbstract group, Board board, Cell spawnCell)
+        int hp;
+
+        int strength;
+
+
+        public Agent(GroupAbstract group, Board board, Cell spawnCell, int hp, int strength)
         {
             this.group = group;
             this.board = board;
@@ -56,6 +61,10 @@ namespace GTASA.SymulationGeneric.Groups.Agents
             this.canBeMoved = true;
             this.moveTimer = 0f;
 
+            this.hp = hp;
+            this.strength = strength;
+
+            spawnCell.AddAgent(this);
         }
 
         public void Update(float dt)
@@ -83,7 +92,14 @@ namespace GTASA.SymulationGeneric.Groups.Agents
                 if (t >= 1f)
                 {
                     absolutPosition = targetPosition;
-                    cell = board.GetCell(absolutPosition);
+                    
+                    if(cell != board.GetCell(absolutPosition))
+                    {
+                        cell.RemoveAgent(this);
+                        cell = board.GetCell(absolutPosition);
+                        cell.AddAgent(this);
+                    }
+
                     isMoving = false;
                 }
                 else

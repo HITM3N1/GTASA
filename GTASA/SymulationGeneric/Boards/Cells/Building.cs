@@ -1,6 +1,9 @@
 ﻿using GTASA.SymulationGeneric.Groups;
+using GTASA.SymulationGeneric.Groups.Agents;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using SharpDX.XAudio2;
+using System.Collections.Generic;
 
 
 namespace GTASA.SymulationGeneric.Boards.Cells
@@ -16,6 +19,7 @@ namespace GTASA.SymulationGeneric.Boards.Cells
 
         private Vector2 exitAbsoultPosition;
 
+        private List<Agent> agentsInside;
 
         private GroupAbstract occupation;
 
@@ -25,9 +29,16 @@ namespace GTASA.SymulationGeneric.Boards.Cells
             this.type = CellType.Building;
             this.occupation = occupation;
             this.hasExit = false;
-
+            this.agentsInside = new List<Agent>();
             this.bounds = bounds;
         }
+
+        
+        public GroupAbstract GetOccupation()
+        {
+            return occupation;
+        }
+
 
         public bool IsExitSet()
         {
@@ -67,6 +78,20 @@ namespace GTASA.SymulationGeneric.Boards.Cells
             return new Vector2 (bounds.X*16, bounds.Y*16);
         }
 
+        public void Update()
+        {
+
+        }
+
+        public void AddAgent(Agent agent)
+        {
+            agentsInside.Add(agent);
+        }
+
+        public void RemoveAgent(Agent agent)
+        {
+            agentsInside.Remove(agent);
+        }
 
         public void Draw(SpriteBatch spriteBatch)
         {

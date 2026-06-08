@@ -56,16 +56,25 @@ namespace GTASA.SymulationGeneric
 
         public void Update(GameTime gameTime)
         {
-            System.Diagnostics.Debug.WriteLine("Symulation.Update wywołane");
-
-            tab.Update();
-
             citizens.Update(gameTime);
+
             police.Update(gameTime);
+
             foreach (Gang gang in gangs)
             {
                 gang.Update(gameTime);
             }
+
+
+
+
+
+
+
+
+
+
+
         }
 
         

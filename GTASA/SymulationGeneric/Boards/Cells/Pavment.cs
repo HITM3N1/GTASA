@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using GTASA.SymulationGeneric.Groups.Agents;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ namespace GTASA.SymulationGeneric.Boards.Cells
         private bool isBuildingEntrace;
         private (int, Building) entrace;
 
+        private List<Agent> agentsInside;
 
         private TextureType textureType;
         public Pavment(Vector2 cords)
@@ -22,6 +24,8 @@ namespace GTASA.SymulationGeneric.Boards.Cells
             this.type = CellType.Pavment;
             this.pavmentsNearby = new Dictionary<int, Pavment>();
             this.isBuildingEntrace = false;
+            this.agentsInside = new List<Agent>();
+
 
             Random random = new Random();
             int r = random.Next(0, 100);
@@ -43,6 +47,16 @@ namespace GTASA.SymulationGeneric.Boards.Cells
                 textureType = TextureType.P3;
             }
 
+        }
+
+        public void AddAgent(Agent agent)
+        {
+            agentsInside.Add(agent);
+        }
+
+        public void RemoveAgent(Agent agent)
+        {
+            agentsInside.Remove(agent);
         }
 
         public Vector2 GetSpawnAbsolutePosition()
