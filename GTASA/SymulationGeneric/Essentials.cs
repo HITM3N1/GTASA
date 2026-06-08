@@ -1,27 +1,89 @@
-﻿using Microsoft.Xna.Framework.Content;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
+
 
 namespace GTASA.SymulationGeneric
 {
     public static class Essentials
     {
-        public static int mapSize = 32;
-        public static int pavmentCount = 5;
-        public static int pavmentOffset = 4;
+        public static int mapSize = 15;
+        public static int pavmentCount = 2;
+        public static int pavmentOffset = 3;
         public static int cellSize = 16;
         public static int gangsCount = 2;
+
+        public static float speed = 0.2f;
+
+        
 
         public static bool NEW_RENDER = true;
         public static float RENDER_ZOOM = 2f;
 
-        public static GroupColor PoliceColor = GroupColor.White;
-        public static GroupColor CitizensColor = GroupColor.White;
+
+        public static class GroupSettings
+        {
+            public static int PoliceStarMembers = 0;
+            public static int CitizensStarMembers = 0;
+            public static int[] GangStarMembers = { 3, 3 };
+            public static GroupColor[] GangColors = { GroupColor.Red, GroupColor.Green };
+
+            public static bool CitizenSpawn = false;
+
+            public static float timeToOccupyBuilding = 5;
+            public static bool canRecrute = true;
+
+            public static float timeToRecrute = 3;
+
+            public static GroupColor PoliceColor = GroupColor.Blue;
+            public static GroupColor CitizensColor = GroupColor.White;
+
+
+            public static int GangRadiusToDefenceBuilding = 10;
+            public static int GangRadiusToAttackBuilding = 5;
+            public static int PoliceRadiusReaction = 20;
+
+            public static int RecrutationChance = 5;
+
+            public static float PoliceSpeedMod = 2f;
+            public static float CitiznesSpeedMod = 0.8f;
+            public static float[] GangSpeedMod = { 1, 1 };
+        }
+        
+
+
+        public static class AgentSettings
+        {
+            public static int GangMemberHP = 100;
+            public static int GangMemberStrength = 10;
+            public static int StenghtForKill = 5;
+
+            public static int PoliceHP = 10000;
+            public static int PoliceStrength = 10000;
+
+            public static int CitizensHP = 1;
+            public static int CitizensStrength = 0;
+
+            public static int Regeneration = 1;
+        }
+
 
 
         public static Dictionary<TextureType, Texture2D> texturesPavment = new Dictionary<TextureType, Texture2D>();
 
         public static Dictionary<(TextureType, GroupColor), Texture2D> texturesBuilding = new Dictionary<(TextureType, GroupColor), Texture2D>();
+
+        public static Dictionary<int, Vector2> direction = new Dictionary<int, Vector2>();
+
+
+        public static void Initialize()
+        {
+            direction[0] = new Vector2(-1, 0);
+            direction[1] = new Vector2(0, -1);
+            direction[2] = new Vector2(1, 0);
+            direction[3] = new Vector2(0, 1);
+        }
 
         public static void LoadContent(ContentManager contentManager)
         {
@@ -66,6 +128,11 @@ namespace GTASA.SymulationGeneric
             texturesBuilding.Add((TextureType.B8, GroupColor.Red), contentManager.Load<Texture2D>("B8-Red"));
             texturesBuilding.Add((TextureType.B0, GroupColor.Red), contentManager.Load<Texture2D>("B0-Red"));
 
+            texturesBuilding.Add((TextureType.D, GroupColor.White), contentManager.Load<Texture2D>("DoorWhite"));
+            texturesBuilding.Add((TextureType.D, GroupColor.Blue), contentManager.Load<Texture2D>("DoorWhite"));
+            texturesBuilding.Add((TextureType.D, GroupColor.Red), contentManager.Load<Texture2D>("DoorRed"));
+            texturesBuilding.Add((TextureType.D, GroupColor.Green), contentManager.Load<Texture2D>("DoorGreen"));
+
             texturesBuilding.Add((TextureType.A, GroupColor.White), contentManager.Load<Texture2D>("Agent-White"));
             texturesBuilding.Add((TextureType.A, GroupColor.Red), contentManager.Load<Texture2D>("Agent-Red"));
             texturesBuilding.Add((TextureType.A, GroupColor.Green), contentManager.Load<Texture2D>("Agent-Green"));
@@ -75,7 +142,6 @@ namespace GTASA.SymulationGeneric
             texturesPavment.Add(TextureType.P1, contentManager.Load<Texture2D>("P1"));
             texturesPavment.Add(TextureType.P2, contentManager.Load<Texture2D>("P2"));
             texturesPavment.Add(TextureType.P3, contentManager.Load<Texture2D>("P3"));
-
         }
     }
 
@@ -92,7 +158,17 @@ namespace GTASA.SymulationGeneric
 
         B0, B1, B2, B3, B4, B5, B6, B7, B8,
 
+        D,
+
         A,
+    }
+
+    public enum TextureRotation
+    {
+        deg0,
+        deg90,
+        deg180,
+        deg270,
     }
 
     public enum GroupColor
@@ -102,11 +178,5 @@ namespace GTASA.SymulationGeneric
         Green,
         Purple,
         Blue,
-    }
-
-
-    public enum AgentState
-    {
-        Idle,
     }
 }

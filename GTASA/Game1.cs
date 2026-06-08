@@ -39,7 +39,7 @@ namespace GTASA
 
         protected override void Update(GameTime gameTime)
         {
-            symulation.Update();
+            symulation.Update(gameTime);
 
             base.Update(gameTime);
         }

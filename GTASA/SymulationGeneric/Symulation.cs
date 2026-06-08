@@ -15,23 +15,31 @@ namespace GTASA.SymulationGeneric
         Police police;
         List<Gang> gangs;
         Matrix cameraMatrix;
+
+        int startPopulation;
     
 
         public Symulation() 
         {
+            Essentials.Initialize();
             cameraMatrix = Matrix.CreateScale(Essentials.RENDER_ZOOM, Essentials.RENDER_ZOOM, 1f);
             gangs = new List<Gang>();
 
-            citizens = new Citizens(5, tab);
-            tab = new Board(Essentials.mapSize, citizens);
-            tab.Initialize();
+            tab = new Board(Essentials.mapSize);
+            tab.Initialize(citizens);
 
-            
-            police = new Police(10, tab);
+            citizens = new Citizens(tab);
+            tab.SetCitizens(citizens);
 
+            police = new Police(tab);
 
-            gangs.Add(new Gang(1, GroupColor.Red, tab));
-            gangs.Add(new Gang(1, GroupColor.Green, tab));
+            startPopulation = Essentials.GroupSettings.PoliceStarMembers + Essentials.GroupSettings.CitizensStarMembers;
+
+            for (int i = 0; i < Essentials.gangsCount; i++)
+            {
+                startPopulation += Essentials.GroupSettings.GangStarMembers[i];
+                gangs.Add(new Gang(i, Essentials.GroupSettings.GangColors[i], tab));
+            }
 
 
             foreach (Gang gang in gangs)
@@ -40,6 +48,10 @@ namespace GTASA.SymulationGeneric
             }
 
             citizens.Initialize(tab);
+            police.Initialize(tab);
+
+            
+            
 
         }
 
@@ -48,10 +60,41 @@ namespace GTASA.SymulationGeneric
             Essentials.LoadContent(contentManager);
         }
 
-        public void Update()
+        public void Update(GameTime gameTime)
         {
-            tab.Update();
+            int populationRightNow = citizens.GetAgentCount() + police.GetAgentCount();
+            foreach(Gang gang in gangs)
+            {
+                populationRightNow += gang.GetAgentCount();
+            }
+
+
+
+            if (populationRightNow < startPopulation && Essentials.GroupSettings.CitizenSpawn)
+            {
+
+                citizens.Update(gameTime, startPopulation - populationRightNow);
+            }
+            else
+            {
+                citizens.Update(gameTime, 0);
+            }
+
+            
+
+            police.Update(gameTime);
+
+            foreach (Gang gang in gangs)
+            {
+                gang.Update(gameTime);
+            }
+
+
+
+            tab.Update(gameTime);
         }
+
+        
 
         public void Draw(SpriteBatch spriteBatch)
         {
@@ -64,6 +107,7 @@ namespace GTASA.SymulationGeneric
             }
 
             citizens.Draw(spriteBatch);
+            police.Draw(spriteBatch);
             spriteBatch.End();
         }
     }

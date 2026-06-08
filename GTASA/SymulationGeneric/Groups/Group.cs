@@ -1,32 +1,60 @@
 ﻿using GTASA.SymulationGeneric.Boards;
+using GTASA.SymulationGeneric.Boards.Cells;
 using GTASA.SymulationGeneric.Groups.Agents;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
+using System.Linq;
 namespace GTASA.SymulationGeneric.Groups
 {
     public interface GroupAbstract
     {
         public GroupColor GetColor();
+
+        public void RemoveAgent(Agent agent);
+
+        public void AddAgent(Agent agent);
+
+        public int GetAgentCount();
+
+        public float GetSpeedModifier();
     }
 
 
     public class Group : GroupAbstract
     {
         protected GroupColor color;
-        protected int agentCount;
         protected List<Agent> agents;
         protected Board board;
-
+        protected float speedModifier;
         public GroupColor GetColor() { return color; }
 
-      
-        protected Group(GroupColor color, int agentcout, Board board)
+        public int GetAgentCount()
+        {
+            return agents.Count;
+        }
+
+        public float GetSpeedModifier()
+        {
+            return speedModifier;
+        }
+
+        public void RemoveAgent(Agent agent)
+        {
+            agents.Remove(agent);
+        }
+
+        public void AddAgent(Agent agent)
+        {
+            agents.Add(agent);
+        }
+
+        protected Group(GroupColor color, Board board, float speedModifier)
         {
             agents = new List<Agent>();
             this.color = color;
-            this.agentCount = agentcout;
             this.board = board;
+            this.speedModifier = speedModifier;
         }
 
         public void Draw(SpriteBatch spriteBatch)
@@ -36,24 +64,17 @@ namespace GTASA.SymulationGeneric.Groups
                 agent.Draw(spriteBatch);
             }
         }
+
+        public List<Agent> GetAgents()
+        {
+            return agents;
+        }
     }
 
     public class Police : Group
     {
 
-        public Police(int agentCout, Board board) : base(Essentials.PoliceColor, agentCout, board) 
-        {
-            
-
-
-
-           
-        }
-    }
-
-    public class Citizens : Group
-    {
-        public Citizens(int agentCout, Board board) : base(Essentials.CitizensColor, agentCout, board)
+        public Police(Board board) : base(Essentials.GroupSettings.PoliceColor, board, Essentials.GroupSettings.PoliceSpeedMod)
         {
 
 
@@ -62,30 +83,165 @@ namespace GTASA.SymulationGeneric.Groups
         public void Initialize(Board board)
         {
             this.board = board;
-            for (int i = 0; i < agentCount; i++)
+            for (int i = 0; i < Essentials.GroupSettings.PoliceStarMembers; i++)
             {
-                agents.Add(new Agent(this, board.GetRandomPavment()));
+                agents.Add(new Agent(this, board, board.GetRandomPavment(), Essentials.AgentSettings.PoliceHP, Essentials.AgentSettings.PoliceStrength));
+            }
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            System.Diagnostics.Debug.WriteLine("Police.Update wywołane");
+            float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            List<Building> buildingsUnderAttack = board.GetAllBuildingsUnderAttack();
+            
+            if (buildingsUnderAttack.Count > 0)
+            {
+                foreach (Building building in buildingsUnderAttack)
+                {
+                    building.CallAgents(Essentials.GroupSettings.PoliceRadiusReaction, this);
+                }
+            }
+            
+
+
+            foreach (Agent agent in agents)
+            {
+                agent.Update(gameTime);
             }
         }
     }
 
+    public class Citizens : Group
+    {
+        public Citizens(Board board) : base(Essentials.GroupSettings.CitizensColor, board, Essentials.GroupSettings.CitiznesSpeedMod)
+        {
+
+
+        }
+
+        public void Initialize(Board board)
+        {
+            this.board = board;
+            for (int i = 0; i < Essentials.GroupSettings.CitizensStarMembers; i++)
+            {
+                agents.Add(new Agent(this, board, board.GetRandomPavment(), Essentials.AgentSettings.CitizensHP, Essentials.AgentSettings.CitizensStrength));
+            }
+        }
+
+        public void Update(GameTime gameTime, int count)
+        {
+            if (count > 0)
+            {
+                for(int i  = 0; i < count; i++)
+                {
+                    agents.Add(new Agent(this, board, board.GetRandomBorderPavment(), Essentials.AgentSettings.CitizensHP, Essentials.AgentSettings.CitizensStrength));
+                }
+
+            }
+
+            System.Diagnostics.Debug.WriteLine("Citizens.Update wywołane");
+
+            float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            foreach (Agent agent in agents.ToList())
+            {
+                if(agent.GetGroup() != this)
+                {
+                    agents.Remove(agent);
+                }
+                else
+                {
+                    agent.Update(gameTime);
+                } 
+            }
+        }
+
+    }
+
     public class Gang : Group
     {
-        private Vector2 groupBase;
+        int gangID;
 
-        public Gang(int agentCout, GroupColor color, Board board ) : base(color, agentCout, board)
+        private Building groupBase;
+
+        private Building test;
+
+        private List<Building> gangBuildings;
+
+        public Gang(int gangID, GroupColor color, Board board) : base(color, board, Essentials.GroupSettings.GangSpeedMod[gangID])
         {
-           
+            groupBase = board.GetFreeSpawnBuilding(this);
+            gangBuildings = board.GetGangBuildings(this);
+            test = board.GetRandomFreeBuilding(this);
+            test.StartAttack();
+            this.gangID = gangID;
         }
 
         public void Initialize()
         {
-            groupBase = board.GetFreeBuilding(this);
-
-            for (int i = 0; i < agentCount; i++)
+            for (int i = 0; i < Essentials.GroupSettings.GangStarMembers[gangID]; i++)
             {
-                agents.Add(new Agent(this, groupBase));
+                agents.Add(new Agent(this, board, groupBase, Essentials.AgentSettings.GangMemberHP, Essentials.AgentSettings.GangMemberStrength));
             }
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            
+            gangBuildings = board.GetGangBuildings(this);
+
+
+            List<Building> buildingsUnderAttack = CheckIfGangBuildingAreUnderAttack(gangBuildings);
+            {
+                if(buildingsUnderAttack.Count > 0)
+                {
+                    foreach (Building building in buildingsUnderAttack)
+                    {
+                        building.CallAgents(Essentials.GroupSettings.GangRadiusToDefenceBuilding, this);
+                    }
+                }
+            }
+            
+            if(!test.IsAttackEnded() && !test.IsPoliceInside())
+            {
+                test.CallAgents(Essentials.GroupSettings.GangRadiusToAttackBuilding, this);
+            }
+            else
+            {
+                test = board.GetRandomFreeBuilding(this);
+                if(test.GetOccupation() != this)
+                {
+                    test.StartAttack();
+                }
+            }
+            
+
+            foreach (Agent agent in agents)
+            {
+                agent.Update(gameTime);
+            }
+        }
+
+
+
+
+
+        public List<Building> CheckIfGangBuildingAreUnderAttack(List<Building> gangBuildings)
+        {
+            List<Building> buildingsUnderAttack = new List<Building>();
+
+            foreach (Building building in gangBuildings)
+            {
+                if(building.IsUnderAttack())
+                {
+                    buildingsUnderAttack.Add(building);
+                }
+                
+            }
+
+            return buildingsUnderAttack;
         }
     }
 }
