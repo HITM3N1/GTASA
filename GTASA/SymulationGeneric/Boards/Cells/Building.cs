@@ -9,7 +9,13 @@ namespace GTASA.SymulationGeneric.Boards.Cells
     {
         private Vector2 cords;
         private CellType type;
-        private Rectangle bounds;
+        public Rectangle bounds;
+
+        private (int, Pavment) exit;
+        private bool hasExit;
+
+        private Vector2 exitAbsoultPosition;
+
 
         private GroupAbstract occupation;
 
@@ -18,8 +24,22 @@ namespace GTASA.SymulationGeneric.Boards.Cells
             this.cords = cords;
             this.type = CellType.Building;
             this.occupation = occupation;
-            
+            this.hasExit = false;
+
             this.bounds = bounds;
+        }
+
+        public bool IsExitSet()
+        {
+            return hasExit;
+        }
+
+        public void SetExit(int directionFromPavmentToBuilding , Pavment pavment)
+        {
+            exitAbsoultPosition = pavment.GetAbsolutPosition() + Essentials.direction[directionFromPavmentToBuilding] * 16;
+
+            exit = ((directionFromPavmentToBuilding + 2) % 4,  pavment);
+            hasExit = true;
         }
 
         public CellType GetCellType()
@@ -37,10 +57,16 @@ namespace GTASA.SymulationGeneric.Boards.Cells
             this.occupation = group;
         }
 
-        public Vector2 GetCenter()
+        public Vector2 GetSpawnAbsolutePosition()
         {
             return new Vector2 ((bounds.Width - bounds.X - 1) * 8 + (bounds.X * 16), (bounds.Height - bounds.Y - 1) * 8 + (bounds.Y * 16));
         }
+
+        public Vector2 GetAbsolutPosition()
+        {
+            return new Vector2 (bounds.X*16, bounds.Y*16);
+        }
+
 
         public void Draw(SpriteBatch spriteBatch)
         {
@@ -102,6 +128,10 @@ namespace GTASA.SymulationGeneric.Boards.Cells
                     }
                 }
             }
+
+
+            spriteBatch.Draw(Essentials.texturesBuilding[(TextureType.D, color)], exitAbsoultPosition, Color.White);
+
         }
     }
 }

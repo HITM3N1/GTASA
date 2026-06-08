@@ -1,18 +1,20 @@
-﻿using Microsoft.Xna.Framework.Content;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
+
 
 namespace GTASA.SymulationGeneric
 {
     public static class Essentials
     {
-        public static int mapSize = 32;
+        public static int mapSize = 40;
         public static int pavmentCount = 5;
-        public static int pavmentOffset = 4;
+        public static int pavmentOffset = 3;
         public static int cellSize = 16;
-        public static int gangsCount = 2;
+        public static int gangsCount = 0;
 
-        public static float speed = 60f;
+        public static float speed = 0.2f;
         public static float fleespeed = 130f;
         public static float fleeDistance = 100f;
 
@@ -26,6 +28,17 @@ namespace GTASA.SymulationGeneric
         public static Dictionary<TextureType, Texture2D> texturesPavment = new Dictionary<TextureType, Texture2D>();
 
         public static Dictionary<(TextureType, GroupColor), Texture2D> texturesBuilding = new Dictionary<(TextureType, GroupColor), Texture2D>();
+
+        public static Dictionary<int, Vector2> direction = new Dictionary<int, Vector2>();
+
+
+        public static void Initialize()
+        {
+            direction[0] = new Vector2(-1, 0);
+            direction[1] = new Vector2(0, -1);
+            direction[2] = new Vector2(1, 0);
+            direction[3] = new Vector2(0, 1);
+        }
 
         public static void LoadContent(ContentManager contentManager)
         {
@@ -70,6 +83,10 @@ namespace GTASA.SymulationGeneric
             texturesBuilding.Add((TextureType.B8, GroupColor.Red), contentManager.Load<Texture2D>("B8-Red"));
             texturesBuilding.Add((TextureType.B0, GroupColor.Red), contentManager.Load<Texture2D>("B0-Red"));
 
+            texturesBuilding.Add((TextureType.D, GroupColor.White), contentManager.Load<Texture2D>("DoorWhite"));
+            texturesBuilding.Add((TextureType.D, GroupColor.Red), contentManager.Load<Texture2D>("DoorRed"));
+            texturesBuilding.Add((TextureType.D, GroupColor.Green), contentManager.Load<Texture2D>("DoorGreen"));
+
             texturesBuilding.Add((TextureType.A, GroupColor.White), contentManager.Load<Texture2D>("Agent-White"));
             texturesBuilding.Add((TextureType.A, GroupColor.Red), contentManager.Load<Texture2D>("Agent-Red"));
             texturesBuilding.Add((TextureType.A, GroupColor.Green), contentManager.Load<Texture2D>("Agent-Green"));
@@ -79,7 +96,6 @@ namespace GTASA.SymulationGeneric
             texturesPavment.Add(TextureType.P1, contentManager.Load<Texture2D>("P1"));
             texturesPavment.Add(TextureType.P2, contentManager.Load<Texture2D>("P2"));
             texturesPavment.Add(TextureType.P3, contentManager.Load<Texture2D>("P3"));
-
         }
     }
 
@@ -96,7 +112,17 @@ namespace GTASA.SymulationGeneric
 
         B0, B1, B2, B3, B4, B5, B6, B7, B8,
 
+        D,
+
         A,
+    }
+
+    public enum TextureRotation
+    {
+        deg0,
+        deg90,
+        deg180,
+        deg270,
     }
 
     public enum GroupColor
@@ -106,11 +132,5 @@ namespace GTASA.SymulationGeneric
         Green,
         Purple,
         Blue,
-    }
-
-
-    public enum AgentState
-    {
-        Idle,
     }
 }

@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+
 
 namespace GTASA.SymulationGeneric.Boards.Cells
 {
@@ -14,5 +16,14 @@ namespace GTASA.SymulationGeneric.Boards.Cells
 
         }
 
+        public Vector2 GetSpawnAbsolutePosition()
+        {
+            return Vector2.Zero;
+        }
+
+        public Vector2 GetAbsolutPosition()
+        {
+            return Vector2.Zero;
+        }
     }
 }

@@ -1,10 +1,11 @@
 ﻿using GTASA.SymulationGeneric.Boards;
+using GTASA.SymulationGeneric.Boards.Cells;
 using GTASA.SymulationGeneric.Groups.Agents;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using GTASA.SymulationGeneric;
 namespace GTASA.SymulationGeneric.Groups
 {
     public interface GroupAbstract
@@ -59,7 +60,7 @@ namespace GTASA.SymulationGeneric.Groups
             this.board = board;
             for (int i = 0; i < agentCount; i++)
             {
-                agents.Add(new Agent(this, board.GetRandomPavment(), board));
+                agents.Add(new Agent(this, board, board.GetRandomPavment()));
             }
         }
 
@@ -69,7 +70,7 @@ namespace GTASA.SymulationGeneric.Groups
             float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
             foreach (Agent agent in agents)
             {
-                agent.Wander(dt);
+                agent.Update(dt);
             }
         }
     }
@@ -87,11 +88,11 @@ namespace GTASA.SymulationGeneric.Groups
             this.board = board;
             for (int i = 0; i < agentCount; i++)
             {
-                agents.Add(new Agent(this, board.GetRandomPavment(), board));
+                agents.Add(new Agent(this, board, board.GetRandomPavment()));
             }
         }
 
-        public void Update(GameTime gameTime, List<Vector2> gangPositions)
+        public void Update(GameTime gameTime)
         {
             System.Diagnostics.Debug.WriteLine("Citizens.Update wywołane");
 
@@ -99,50 +100,53 @@ namespace GTASA.SymulationGeneric.Groups
 
             foreach (Agent agent in agents)
             {
-                Vector2? nearestGang = FindNearestGang(agent.GetPosition(), gangPositions);
-                    if (nearestGang.HasValue)
-                        agent.Flee(nearestGang.Value, dt);
-                    else
-                        agent.Wander(dt);
+                agent.Update(dt);
             }
         }
 
-        private Vector2? FindNearestGang(Vector2 agentPosition, List<Vector2> gangPositions)
-        {
-            Vector2? nearest = null;
-            float minDist = Essentials.fleeDistance;
+        //private Vector2? FindNearestGang(Vector2 agentPosition, List<Vector2> gangPositions)
+        //{
+        //    Vector2? nearest = null;
+        //    float minDist = Essentials.fleeDistance;
 
-            foreach (Vector2 gangPos in gangPositions)
-            {
-                float dist = Vector2.Distance(agentPosition, gangPos);
-                if (dist < minDist)
-                {
-                    minDist = dist;
-                    nearest = gangPos;
-                }
-            }
-            return nearest;
-        }
-
+        //    foreach (Vector2 gangPos in gangPositions)
+        //    {
+        //        float dist = Vector2.Distance(agentPosition, gangPos);
+        //        if (dist < minDist)
+        //        {
+        //            minDist = dist;
+        //            nearest = gangPos;
+        //        }
+        //    }
+        //    return nearest;
+        //}
 
     }
 
     public class Gang : Group
     {
-        private Vector2 groupBase;
+        private Cell groupBase;
 
         public Gang(int agentCount, GroupColor color, Board board ) : base(color, agentCount, board)
         {
-           
+            groupBase = board.GetFreeBuilding(this);
         }
 
         public void Initialize()
         {
-            groupBase = board.GetFreeBuilding(this);
-
             for (int i = 0; i < agentCount; i++)
             {
-                agents.Add(new Agent(this, groupBase, board));
+                agents.Add(new Agent(this, board, groupBase));
+            }
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            foreach(Agent agent in agents)
+            {
+                agent.Update(dt);
             }
         }
     }
