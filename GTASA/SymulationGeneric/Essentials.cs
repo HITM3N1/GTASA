@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 
 
@@ -8,6 +9,10 @@ namespace GTASA.SymulationGeneric
 {
     public static class Essentials
     {
+        private static int seed = 0;
+        public static Random random = new Random(seed);
+
+
         public static int mapSize = 15;
         public static int pavmentCount = 2;
         public static int pavmentOffset = 3;
@@ -19,14 +24,45 @@ namespace GTASA.SymulationGeneric
         
 
         public static bool NEW_RENDER = true;
-        public static float RENDER_ZOOM = 2f;
+        public static float RENDER_ZOOM = 3f;
 
 
         public static class GroupSettings
         {
             public static int PoliceStarMembers = 0;
             public static int CitizensStarMembers = 0;
-            public static int[] GangStarMembers = { 3, 3 };
+            public static int[] GangStarMembers = { 0, 0 };
+            public static GroupColor[] GangColors = { GroupColor.Red, GroupColor.Green };
+
+            public static bool CitizenSpawn = true;
+
+            public static float timeToOccupyBuilding = 5;
+            public static bool canRecrute = true;
+
+            public static float timeToRecrute = 3;
+
+            public static GroupColor PoliceColor = GroupColor.Blue;
+            public static GroupColor CitizensColor = GroupColor.White;
+
+
+            public static int GangRadiusToDefenceBuilding = 10;
+            public static int GangRadiusToAttackBuilding = 5;
+            public static int PoliceRadiusReaction = 20;
+
+            public static int RecrutationChance = 5;
+
+            public static float PoliceSpeedMod = 2f;
+            public static float CitiznesSpeedMod = 1.1f;
+            public static float[] GangSpeedMod = { 1, 1 };
+
+            public static bool ranodmizeSpeed = false;
+        }
+
+        public static class GroupSettings1
+        {
+            public static int PoliceStarMembers = 0;
+            public static int CitizensStarMembers = 0;
+            public static int[] GangStarMembers = { 2, 3 };
             public static GroupColor[] GangColors = { GroupColor.Red, GroupColor.Green };
 
             public static bool CitizenSpawn = false;
@@ -49,8 +85,72 @@ namespace GTASA.SymulationGeneric
             public static float PoliceSpeedMod = 2f;
             public static float CitiznesSpeedMod = 0.8f;
             public static float[] GangSpeedMod = { 1, 1 };
+
+            public static bool ranodmizeSpeed = true;
         }
-        
+
+        public static class GroupSettings2
+        {
+            public static int PoliceStarMembers = 1;
+            public static int CitizensStarMembers = 1;
+            public static int[] GangStarMembers = { 2, 3 };
+            public static GroupColor[] GangColors = { GroupColor.Red, GroupColor.Green };
+
+            public static bool CitizenSpawn = true;
+
+            public static float timeToOccupyBuilding = 5;
+            public static bool canRecrute = true;
+
+            public static float timeToRecrute = 3;
+
+            public static GroupColor PoliceColor = GroupColor.Blue;
+            public static GroupColor CitizensColor = GroupColor.White;
+
+
+            public static int GangRadiusToDefenceBuilding = 10;
+            public static int GangRadiusToAttackBuilding = 5;
+            public static int PoliceRadiusReaction = 20;
+
+            public static int RecrutationChance = 5;
+
+            public static float PoliceSpeedMod = 2f;
+            public static float CitiznesSpeedMod = 1.1f;
+            public static float[] GangSpeedMod = { 1, 1 };
+
+            public static bool ranodmizeSpeed = false;
+        }
+
+        public static class GroupSettings4
+        {
+            public static int PoliceStarMembers = 0;
+            public static int CitizensStarMembers = 0;
+            public static int[] GangStarMembers = { 2, 3 };
+            public static GroupColor[] GangColors = { GroupColor.Red, GroupColor.Green };
+
+            public static bool CitizenSpawn = false;
+
+            public static float timeToOccupyBuilding = 5;
+            public static bool canRecrute = true;
+
+            public static float timeToRecrute = 3;
+
+            public static GroupColor PoliceColor = GroupColor.Blue;
+            public static GroupColor CitizensColor = GroupColor.White;
+
+
+            public static int GangRadiusToDefenceBuilding = 10;
+            public static int GangRadiusToAttackBuilding = 5;
+            public static int PoliceRadiusReaction = 20;
+
+            public static int RecrutationChance = 5;
+
+            public static float PoliceSpeedMod = 2f;
+            public static float CitiznesSpeedMod = 0.8f;
+            public static float[] GangSpeedMod = { 1, 1 };
+
+            public static bool ranodmizeSpeed = true;
+        }
+
 
 
         public static class AgentSettings

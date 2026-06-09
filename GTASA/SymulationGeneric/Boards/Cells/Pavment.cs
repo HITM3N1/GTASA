@@ -28,9 +28,7 @@ namespace GTASA.SymulationGeneric.Boards.Cells
             this.isBuildingEntrace = false;
             this.agentsInside = new List<Agent>();
 
-
-            Random random = new Random();
-            int r = random.Next(0, 100);
+            int r = Essentials.random.Next(0, 100);
 
             if(r < 85)
             {

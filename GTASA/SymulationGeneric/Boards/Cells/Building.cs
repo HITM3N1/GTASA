@@ -115,6 +115,7 @@ namespace GTASA.SymulationGeneric.Boards.Cells
                         {
                             if(pair.Value.Count > max)
                             {
+                                max = pair.Value.Count;
                                 winner = pair.Key;
                             }
                         }
