@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 
 
@@ -47,8 +48,10 @@ namespace GTASA.SymulationGeneric
             public static float PoliceSpeedMod = 2f;
             public static float CitiznesSpeedMod = 0.8f;
             public static float[] GangSpeedMod = { 1, 1 };
+
+            public static bool ranodmizeSpeed = true;
         }
-        
+
 
 
         public static class AgentSettings

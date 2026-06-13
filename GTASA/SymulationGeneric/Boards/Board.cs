@@ -47,8 +47,6 @@ namespace GTASA.SymulationGeneric.Boards
 
         private void GeneratePavment(int count, int minimaloffset)
         {
-            Random random = new Random();
-
             Vector2[] centers = new Vector2[count];
 
             for (int i = 0; i < count; i++)
@@ -60,8 +58,8 @@ namespace GTASA.SymulationGeneric.Boards
 
             while (k != count) // moze nie działać dla z małych map jak na razie
             {
-                int y = random.Next(3, size - 3);
-                int x = random.Next(3, size - 3);
+                int y = Essentials.random.Next(3, size - 3);
+                int x = Essentials.random.Next(3, size - 3);
 
                 bool canBeANewCenter = true;
 
@@ -265,8 +263,7 @@ namespace GTASA.SymulationGeneric.Boards
 
         public Cell GetRandomPavment() // zwraca losowy choidnik
         {
-            Random random = new Random();
-            return pavments[random.Next(0, pavments.Count)];
+            return pavments[Essentials.random.Next(0, pavments.Count)];
         }
 
         public Cell GetRandomBorderPavment() //losowe końcówki chodników do respienia mieszkańców
@@ -281,18 +278,16 @@ namespace GTASA.SymulationGeneric.Boards
                 }
             }
 
-            Random random = new Random();
-            return borderPavments[random.Next(0, borderPavments.Count)];
+            return borderPavments[Essentials.random.Next(0, borderPavments.Count)];
         }
 
         public Building GetFreeSpawnBuilding(Group group) // wolny buydenk do pojawienia sie bazy gangu bez przypadku gdy jest za malo budynku
         {
-            Random random = new Random();
-            int index = random.Next(0, buildings.Count);
+            int index = Essentials.random.Next(0, buildings.Count);
 
             while (!buildings[index].Isfree())
             {
-                index = random.Next(0, buildings.Count);
+                index = Essentials.random.Next(0, buildings.Count);
             }
 
             buildings[index].SetOccupation(group);
@@ -301,12 +296,11 @@ namespace GTASA.SymulationGeneric.Boards
 
         public Building GetRandomFreeBuilding(GroupAbstract groupAbstract) // losowy budynek który nioe należy do tej grupy
         {
-            Random random = new Random();
-            int index = random.Next(0, buildings.Count);
+            int index = Essentials.random.Next(0, buildings.Count);
 
             while (buildings[index].GetOccupation() == groupAbstract)
             {
-                index = random.Next(0, buildings.Count);
+                index = Essentials.random.Next(0, buildings.Count);
             }
 
             return buildings[index];

@@ -62,7 +62,16 @@ namespace GTASA.SymulationGeneric.Groups.Agents
             this.absolutPosition = spawnCell.GetSpawnAbsolutePosition();
             this.targetPath = new Queue<Vector2>();
             this.direction = null;
-            this.speed = Essentials.speed * group.GetSpeedModifier();
+            
+            if(Essentials.GroupSettings.ranodmizeSpeed)
+            {
+                this.speed = ((Essentials.random.Next( (int)((0 - Essentials.speed) * 100), (int)((Essentials.speed) * 100)) / 200f + Essentials.speed) );
+            }
+            else
+            {
+                this.speed = Essentials.speed;
+            }
+            this.speed *= group.GetSpeedModifier();
             this.isMoving = false;
             this.canBeMoved = true;
             this.moveTimer = 0f;
@@ -211,13 +220,11 @@ namespace GTASA.SymulationGeneric.Groups.Agents
 
             if (citizensNearby.Count > 0)
             {
-                Random random = new Random();
-
-                int i = random.Next(0, 100);
+                int i = Essentials.random.Next(0, 100);
 
                 if(i < Essentials.GroupSettings.RecrutationChance)
                 {
-                    Agent recrute = citizensNearby[random.Next(0, citizensNearby.Count)];
+                    Agent recrute = citizensNearby[Essentials.random.Next(0, citizensNearby.Count)];
 
                     recrute.LockAgent(group);
                     LockAgent(group);
@@ -227,8 +234,6 @@ namespace GTASA.SymulationGeneric.Groups.Agents
 
         public void Wander()
         {
-            Random random = new Random();
-
             if (cell.GetCellType() == CellType.Pavment)
             {
                 Pavment actuallCell = (Pavment)cell;
@@ -260,7 +265,7 @@ namespace GTASA.SymulationGeneric.Groups.Agents
 
                     if (actuallCell.pavmentsNearby.Count() == 4)
                     {
-                        int i = random.Next(1, 6);
+                        int i = Essentials.random.Next(1, 6);
 
                         if (i == 1)
                         {
@@ -300,8 +305,8 @@ namespace GTASA.SymulationGeneric.Groups.Agents
                 }
                 else
                 {
-                    int x = (random.Next(0, 2) == 0 ? 2 : -2) * random.Next(0, 2);
-                    int y = x == 0 ? (random.Next(0, 2) == 0 ? 2 : -2) : 0;
+                    int x = (Essentials.random.Next(0, 2) == 0 ? 2 : -2) * Essentials.random.Next(0, 2);
+                    int y = x == 0 ? (Essentials.random.Next(0, 2) == 0 ? 2 : -2) : 0;
 
                     Vector2 target = Vector2.Clamp(new Vector2(x + absolutPosition.X, y + absolutPosition.Y), new Vector2(building.bounds.X * 16, building.bounds.Y * 16), new Vector2((building.bounds.Width - 1) * 16, (building.bounds.Height - 1) * 16));
 
