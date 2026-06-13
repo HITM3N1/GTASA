@@ -1,35 +1,35 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics; // przeznaczone głownie na windows
+using Microsoft.Xna.Framework.Graphics;
 using GTASA.SymulationGeneric;
 
-namespace GTASA // głowna klasa Monogame zarządzajaca oknem rysowaniem i pętlą (game1.cs)
+namespace GTASA
 {
-    public class Game1 : Game 
+    public class Game1 : Game
     {
-        private GraphicsDeviceManager _graphics; //ustawia okno gry
-        private SpriteBatch _spriteBatch; //słuzy do rysowania tekstur
-        private Symulation symulation; // przewowuje cała logikę gry
+        private GraphicsDeviceManager _graphics;
+        private SpriteBatch _spriteBatch;
+        private Symulation symulation;
 
-        public Game1()   // Game1 nie zna szczegółów mapy, gangów ani agentów, on tylko aktulaizuje i rysuje
+        public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            IsMouseVisible = true; // widocznosc myszki w grze wł/wył
+            IsMouseVisible = true;
 
-            _graphics.IsFullScreen = false; // full scren wł/wył
-            _graphics.PreferredBackBufferWidth = Essentials.mapSize * Essentials.cellSize * (int)Essentials.RENDER_ZOOM; // rozmiar mapy x rozmiar kafelka x zoom - szerokosc
-            _graphics.PreferredBackBufferHeight = Essentials.mapSize * Essentials.cellSize * (int)Essentials.RENDER_ZOOM;  //// rozmiar mapy x rozmiar kafelka x zoom - wysokosć
+            _graphics.IsFullScreen = false;
+            _graphics.PreferredBackBufferWidth = Essentials.mapSize * 16 * (int)Essentials.RENDER_ZOOM;
+            _graphics.PreferredBackBufferHeight = Essentials.mapSize * 16 * (int)Essentials.RENDER_ZOOM;
             _graphics.ApplyChanges();
         }
 
-        protected override void Initialize() // tworzymi obiekt symulation
+        protected override void Initialize()
         {
             symulation = new Symulation();
 
             base.Initialize();
         }
 
-        protected override void LoadContent() // ładujemy tekstury
+        protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
@@ -37,14 +37,14 @@ namespace GTASA // głowna klasa Monogame zarządzajaca oknem rysowaniem i pętl
 
         }
 
-        protected override void Update(GameTime gameTime) // akutalizacja symulaci co klatke
+        protected override void Update(GameTime gameTime)
         {
             symulation.Update(gameTime);
 
             base.Update(gameTime);
         }
 
-        protected override void Draw(GameTime gameTime) // rysowanie agentów i mapy co klatkę
+        protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 

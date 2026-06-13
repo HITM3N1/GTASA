@@ -12,7 +12,7 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.8.2.1105" /> <!-- powoduje fakt zę projekt używa c# / .NET 8 / MonoGame windowsDX-->
+    <PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.8.2.1105" />
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.2.1105" />
   </ItemGroup>
   <Target Name="RestoreDotnetTools" BeforeTargets="Restore">

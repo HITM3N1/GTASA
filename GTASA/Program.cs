@@ -1,2 +1,2 @@
-﻿using var game = new GTASA.Game1(); //tworzymy obietkt gey game1 i urochamiamy gre
+﻿using var game = new GTASA.Game1();
 game.Run();
