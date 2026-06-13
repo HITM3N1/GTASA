@@ -6,35 +6,33 @@ using System.Collections.Generic;
 
 namespace GTASA.SymulationGeneric
 {
-    public static class Essentials
+    public static class Essentials // classa z ustawieniami globalnymi (panel konifguracyjny całej gry)
     {
-        public static int mapSize = 15;
-        public static int pavmentCount = 2;
-        public static int pavmentOffset = 3;
-        public static int cellSize = 16;
-        public static int gangsCount = 2;
+        public static int mapSize = 15;  //mapa na  np. 15x15 kafełkow
+        public static int pavmentCount = 2; // ilość krzyżującyhc sie chodników
+        public static int pavmentOffset = 3; // minimalny odstęp między chodnikami
+        public static int cellSize = 16; // wielkosc pojedynczego kafelka w pikselach
 
-        public static float speed = 0.2f;
+        public static int gangsCount = 2; // liczb gangów
 
-        
-
+        public static float speed = 0.2f; // bazowa prędkosc agentów
         public static bool NEW_RENDER = true;
-        public static float RENDER_ZOOM = 2f;
+        public static float RENDER_ZOOM = 2f;  // powiększenie obrazu
 
 
         public static class GroupSettings
         {
-            public static int PoliceStarMembers = 0;
-            public static int CitizensStarMembers = 0;
-            public static int[] GangStarMembers = { 3, 3 };
-            public static GroupColor[] GangColors = { GroupColor.Red, GroupColor.Green };
+            public static int PoliceStarMembers = 0; // początkowa ilość policjatnów
+            public static int CitizensStarMembers = 0; // początkopwa ilość mieszkańców
+            public static int[] GangStarMembers = { 3, 3 }; // ilośc agentów w gangach
+            public static GroupColor[] GangColors = { GroupColor.Red, GroupColor.Green }; // kolor gangów
 
-            public static bool CitizenSpawn = false;
+            public static bool CitizenSpawn = false; //respawn mieszkańców po smierći
 
-            public static float timeToOccupyBuilding = 5;
-            public static bool canRecrute = true;
+            public static float timeToOccupyBuilding = 5; // czas w jakim gangi przejmują budynki
+            public static bool canRecrute = true; // czy gangi mogą rekrutować mieszkanców
 
-            public static float timeToRecrute = 3;
+            public static float timeToRecrute = 3; // czas rekrutowania
 
             public static GroupColor PoliceColor = GroupColor.Blue;
             public static GroupColor CitizensColor = GroupColor.White;
@@ -77,12 +75,12 @@ namespace GTASA.SymulationGeneric
         public static Dictionary<int, Vector2> direction = new Dictionary<int, Vector2>();
 
 
-        public static void Initialize()
+        public static void Initialize() // kierunku ruchu
         {
-            direction[0] = new Vector2(-1, 0);
-            direction[1] = new Vector2(0, -1);
-            direction[2] = new Vector2(1, 0);
-            direction[3] = new Vector2(0, 1);
+            direction[0] = new Vector2(-1, 0); //lewo
+            direction[1] = new Vector2(0, -1); // góra
+            direction[2] = new Vector2(1, 0); // prawo
+            direction[3] = new Vector2(0, 1); // dół
         }
 
         public static void LoadContent(ContentManager contentManager)

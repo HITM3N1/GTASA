@@ -1,247 +1,239 @@
-# GTASA Simulation
+ï»¿# GTASA Simulation
 
-## English Version
+## Opis projektu
 
-## Description
+GTASA Simulation to prosta symulacja miasta 2D napisana w jÄ™zyku C# z uÅ¼yciem frameworka MonoGame.
 
-GTASA Simulation is a simple tile-based city simulation written in C# using the MonoGame framework.  
-The project represents a city with citizens, two rival gangs, police units, pavements, and buildings.
+Projekt przedstawia kafelkowe miasto zbudowane z chodnikÃ³w, budynkÃ³w, gangÃ³w, policji i mieszkaÅ„cÃ³w. GÅ‚Ã³wnym celem symulacji jest pokazanie dziaÅ‚ania grup w mieÅ›cie, gdzie gangi mogÄ… przejmowaÄ‡ budynki, atakowaÄ‡ nowe obszary oraz reagowaÄ‡ na dziaÅ‚ania innych grup.
 
-The main idea of the project is to create a gang war simulation. In the future, gangs will fight each other to take control of buildings on the map. Controlled buildings are planned to generate money, which gangs will be able to use to recruit citizens and increase their strength. The police will act as a third faction that affects the behavior of gangs and citizens.
+Projekt jest obecnie prototypem, dlatego czÄ™Å›Ä‡ mechanik dziaÅ‚a w podstawowej wersji, a czÄ™Å›Ä‡ zostaÅ‚a przygotowana pod dalszy rozwÃ³j.
 
-Currently, the project already includes procedural map generation, buildings, pavements, citizens, gangs, police units, and basic agent movement.
 
-## Technologies
-
-- C#
-- .NET 8
-- MonoGame
-
-## Current Features
-
-- generation of a square tile-based map
-- default map size of 32x32 tiles
-- configurable map size in the code
-- random pavement generation
-- automatic building generation
-- creation of citizens, gangs, and police groups
-- assigning base buildings to gangs
-- basic rendering of the map, buildings, pavements, and agents
-- random wandering movement for citizens
-- random wandering movement for police units
-- citizens fleeing from nearby gang members
-- basic group color system for agents and buildings
-
-## Planned Features
-
-- gang movement around the city
-- fights between rival gangs
-- taking control of buildings
-- money generation from controlled buildings
-- recruiting citizens into gangs
-- police reactions to gang activity
-- improved agent behavior
-- user interface with simulation statistics
-
-## Running the Project
-
-1. Install .NET 8 SDK.
-2. Install MonoGame using this [video tutorial](https://youtu.be/F1Sj14ccuBQ).
-3. Open the project folder in the terminal.
-4. Run the project:
-
-```bash
-dotnet run
-```
-
-## Project Structure
-
-- `Program.cs` - the entry point of the program.
-- `Game1.cs` - the main MonoGame game class.
-- `Symulation.cs` - manages the main simulation logic.
-- `Board.cs` - generates and stores the tile-based map.
-- `Cell.cs` - defines the common interface for map cells.
-- `EmptyCell.cs` - represents an empty map cell.
-- `Pavment.cs` - represents pavement tiles.
-- `Building.cs` - represents buildings on the map.
-- `Agent.cs` - represents a single moving agent.
-- `Group.cs` - contains group classes such as citizens, police, and gangs.
-- `Essentials.cs` - stores global settings, textures, and enums.
-
-## How the Simulation Works
-
-When the program starts, it creates a square tile-based board.  
-The board is first filled with empty cells. Then, the program generates pavements and creates buildings in the remaining empty spaces.
-
-After the map is generated, the simulation creates different groups of agents:
-
-- citizens
-- police
-- red gang
-- green gang
-
-Gangs receive base buildings on the map. Citizens and police units spawn on pavements and move around the city. Citizens wander randomly, but when they detect a nearby gang member, they try to flee.
-
-## Configuration
-
-Some basic project settings can be changed in `Essentials.cs`.
-
-Examples:
-
-- map size
-- tile size
-- number of generated pavements
-- render zoom
-- agent speed
-- flee speed
-- flee distance
-
-The default map size is currently set to 32x32 tiles, but the board is designed to work as a square map with a configurable size.
-
-## Status
-
-The project is currently in development.
-
-Already implemented:
-
-- map generation
-- pavement generation
-- building generation
-- gang base assignment
-- rendering system
-- basic citizen movement
-- citizen fleeing behavior
-- basic police movement
-
-Not implemented yet:
-
-- gang movement
-- gang fights
-- building takeover system
-- money system
-- recruitment system
-- advanced police behavior
-
----
-
-# Wersja polska
-
-## Opis
-
-GTASA Simulation to prosta symulacja miasta oparta na kafelkach, napisana w jêzyku C# z u¿yciem frameworka MonoGame.  
-Projekt przedstawia miasto z mieszkañcami, dwoma rywalizuj¹cymi gangami, policj¹, chodnikami oraz budynkami.
-
-G³ównym celem projektu jest stworzenie symulacji wojny gangów. W przysz³oœci gangi bêd¹ walczyæ miêdzy sob¹ o przejmowanie budynków na mapie. Kontrolowane budynki maj¹ generowaæ pieni¹dze, które gangi bêd¹ mog³y wykorzystywaæ do rekrutowania mieszkañców i zwiêkszania swojej si³y. Policja bêdzie pe³niæ rolê trzeciej frakcji, która wp³ywa na zachowanie gangów i mieszkañców.
-
-Aktualnie projekt zawiera ju¿ proceduralne generowanie mapy, budynki, chodniki, mieszkañców, gangi, policjê oraz podstawowy ruch agentów.
 
 ## Technologie
 
 - C#
 - .NET 8
 - MonoGame
+- Visual Studio
 
-## Aktualne funkcje
+Projekt jest przygotowany gÅ‚Ã³wnie pod system Windows.
 
-- generowanie kwadratowej mapy kafelkowej
-- domyœlny rozmiar mapy 32x32 kafelki
-- mo¿liwoœæ zmiany rozmiaru mapy w kodzie
-- losowe generowanie chodników
-- automatyczne generowanie budynków
-- tworzenie mieszkañców, gangów i policji
-- przypisywanie gangom baz w budynkach
-- podstawowe renderowanie mapy, budynków, chodników i agentów
-- losowe poruszanie siê mieszkañców
-- losowe poruszanie siê policji
-- uciekanie mieszkañców przed pobliskimi cz³onkami gangów
-- podstawowy system kolorów grup dla agentów i budynków
+---
 
-## Planowane funkcje
+## GÅ‚Ã³wne funkcje
 
-- poruszanie siê gangów po mieœcie
-- walki miêdzy rywalizuj¹cymi gangami
-- przejmowanie budynków
-- generowanie pieniêdzy z kontrolowanych budynków
-- rekrutowanie mieszkañców do gangów
-- reakcje policji na dzia³ania gangów
-- ulepszone zachowanie agentów
-- interfejs u¿ytkownika ze statystykami symulacji
+Projekt zawiera:
 
-## Uruchomienie projektu
+- generowanie kafelkowej mapy miasta,
+- generowanie chodnikÃ³w i budynkÃ³w,
+- tworzenie wejÅ›Ä‡ do budynkÃ³w,
+- poruszanie agentÃ³w po mapie,
+- pÅ‚ynny ruch agentÃ³w,
+- podziaÅ‚ agentÃ³w na grupy,
+- system gangÃ³w,
+- przejmowanie budynkÃ³w,
+- podstawowÄ… reakcjÄ™ policji,
+- podstawowÄ… rekrutacjÄ™ mieszkaÅ„cÃ³w,
+- renderowanie grafik pixel-art.
 
-1. Zainstaluj .NET 8 SDK.
-2. Zainstaluj MonoGame, korzystaj¹c z [poradnika wideo](https://youtu.be/F1Sj14ccuBQ).
-3. Otwórz folder projektu w terminalu.
-4. Uruchom projekt:
-
-```bash
-dotnet run
-```
+---
 
 ## Struktura projektu
 
-- `Program.cs` - punkt startowy programu.
-- `Game1.cs` - g³ówna klasa gry MonoGame.
-- `Symulation.cs` - zarz¹dza g³ówn¹ logik¹ symulacji.
-- `Board.cs` - generuje i przechowuje mapê kafelkow¹.
-- `Cell.cs` - definiuje wspólny interfejs dla pól mapy.
-- `EmptyCell.cs` - reprezentuje puste pole mapy.
-- `Pavment.cs` - reprezentuje kafelki chodnika.
-- `Building.cs` - reprezentuje budynki na mapie.
-- `Agent.cs` - reprezentuje pojedynczego poruszaj¹cego siê agenta.
-- `Group.cs` - zawiera klasy grup, takie jak mieszkañcy, policja i gangi.
-- `Essentials.cs` - przechowuje globalne ustawienia, tekstury i typy wyliczeniowe.
+```text
+GTASA/
+â”œâ”€â”€ GTASA.slnx
+â”œâ”€â”€ README.md
+â”œâ”€â”€ GTASA/
+â”‚   â”œâ”€â”€ GTASA.csproj
+â”‚   â”œâ”€â”€ Program.cs
+â”‚   â”œâ”€â”€ Game1.cs
+â”‚   â”œâ”€â”€ Content/
+â”‚   â””â”€â”€ SymulationGeneric/
+â”‚       â”œâ”€â”€ Essentials.cs
+â”‚       â”œâ”€â”€ Symulation.cs
+â”‚       â”œâ”€â”€ Boards/
+â”‚       â”‚   â”œâ”€â”€ Board.cs
+â”‚       â”‚   â””â”€â”€ Cells/
+â”‚       â”‚       â”œâ”€â”€ Cell.cs
+â”‚       â”‚       â”œâ”€â”€ Building.cs
+â”‚       â”‚       â”œâ”€â”€ Pavment.cs
+â”‚       â”‚       â””â”€â”€ Void.cs
+â”‚       â””â”€â”€ Groups/
+â”‚           â”œâ”€â”€ Group.cs
+â”‚           â””â”€â”€ Agents/
+â”‚               â””â”€â”€ Agent.cs
+```
 
-## Jak dzia³a symulacja
+---
 
-Po uruchomieniu program tworzy kwadratow¹ mapê kafelkow¹.  
-Na pocz¹tku mapa jest wype³niana pustymi polami. Nastêpnie program generuje chodniki i tworzy budynki w pozosta³ych pustych przestrzeniach.
+## Architektura projektu
 
-Po wygenerowaniu mapy symulacja tworzy ró¿ne grupy agentów:
+OgÃ³lny przepÅ‚yw dziaÅ‚ania programu:
 
-- mieszkañców
-- policjê
-- czerwony gang
-- zielony gang
+```text
+Program.cs
+   â†“
+Game1.cs
+   â†“
+Symulation.cs
+   â†“
+Board.cs
+   â†“
+Building.cs / Pavment.cs / Cell.cs
+   â†“
+Group.cs
+   â†“
+Agent.cs
+```
 
-Gangi otrzymuj¹ swoje budynki bazowe na mapie. Mieszkañcy i policja pojawiaj¹ siê na chodnikach i poruszaj¹ siê po mieœcie. Mieszkañcy chodz¹ losowo, ale gdy wykryj¹ w pobli¿u cz³onka gangu, próbuj¹ uciekaæ.
+Znaczenie gÅ‚Ã³wnych plikÃ³w:
+
+- `Program.cs` - uruchamia grÄ™.
+- `Game1.cs` - obsÅ‚uguje MonoGame, okno gry, aktualizacjÄ™ i rysowanie.
+- `Symulation.cs` - tworzy i koordynuje caÅ‚Ä… symulacjÄ™.
+- `Board.cs` - generuje i przechowuje mapÄ™.
+- `Cell.cs` - definiuje wspÃ³lny interfejs komÃ³rek mapy.
+- `Pavment.cs` - reprezentuje chodniki.
+- `Building.cs` - reprezentuje budynki i logikÄ™ ich przejmowania.
+- `Group.cs` - definiuje grupy: gangi, policjÄ™ i mieszkaÅ„cÃ³w.
+- `Agent.cs` - obsÅ‚uguje pojedynczego agenta, jego ruch i interakcje.
+
+---
+
+## NajwaÅ¼niejsze klasy
+
+### `Symulation.cs`
+
+GÅ‚Ã³wny koordynator projektu. Tworzy mapÄ™, mieszkaÅ„cÃ³w, policjÄ™ i gangi.  
+Odpowiada teÅ¼ za aktualizowanie oraz rysowanie caÅ‚ej symulacji.
+
+
+
+### `Board.cs`
+
+Odpowiada za mapÄ™ gry.
+
+
+### `Group.cs`
+
+Definiuje grupy wystÄ™pujÄ…ce w symulacji:
+
+- `Citizens` - mieszkaÅ„cy,
+- `Police` - policja,
+- `Gang` - gangi.
+
+
+
+### `Agent.cs`
+
+Reprezentuje pojedynczÄ… postaÄ‡ w symulacji.
+
+Agent:
+
+- naleÅ¼y do konkretnej grupy,
+- posiada pozycjÄ™ na mapie,
+- moÅ¼e siÄ™ poruszaÄ‡,
+- moÅ¼e wchodziÄ‡ do budynkÃ³w,
+- moÅ¼e zostaÄ‡ zrekrutowany,
+- jest rysowany na ekranie.
+
+Ruch agenta jest pÅ‚ynny dziÄ™ki interpolacji:
+
+```csharp
+absolutPosition = Vector2.Lerp(startPosition, targetPosition, t);
+```
+
+---
+
+### `Building.cs`
+
+Reprezentuje budynek.
+
+Budynek moÅ¼e:
+
+- mieÄ‡ wÅ‚aÅ›ciciela,
+- byÄ‡ atakowany,
+- przechowywaÄ‡ agentÃ³w w Å›rodku,
+- zostaÄ‡ przejÄ™ty przez innÄ… grupÄ™,
+- woÅ‚aÄ‡ agentÃ³w z okolicy.
+
+---
+
+## Przebieg dziaÅ‚ania symulacji
+
+```text
+Program.cs uruchamia grÄ™.
+        â†“
+Game1.cs tworzy okno i symulacjÄ™.
+        â†“
+Symulation tworzy mapÄ™ oraz grupy.
+        â†“
+Board generuje chodniki i budynki.
+        â†“
+Gangi otrzymujÄ… swoje budynki bazowe.
+        â†“
+Agenci gangÃ³w pojawiajÄ… siÄ™ w bazach.
+        â†“
+Gangi wybierajÄ… budynki do ataku.
+        â†“
+Agenci idÄ… do celu.
+        â†“
+Budynki rozstrzygajÄ… przejÄ™cie.
+        â†“
+Symulacja dziaÅ‚a dalej co klatkÄ™.
+```
+
+---
 
 ## Konfiguracja
 
-Niektóre podstawowe ustawienia projektu mo¿na zmieniæ w pliku `Essentials.cs`.
+NajwaÅ¼niejsze ustawienia znajdujÄ… siÄ™ w pliku `Essentials.cs`.
 
-Przyk³ady:
+PrzykÅ‚ad:
 
-- rozmiar mapy
-- rozmiar kafelka
-- liczba generowanych chodników
-- powiêkszenie renderowania
-- prêdkoœæ agentów
-- prêdkoœæ ucieczki
-- dystans ucieczki
+```csharp
+public static int mapSize = 15;
+public static int pavmentCount = 2;
+public static int pavmentOffset = 3;
+public static int cellSize = 16;
+public static int gangsCount = 2;
+public static float speed = 0.2f;
+public static float RENDER_ZOOM = 2f;
+```
 
-Domyœlny rozmiar mapy jest obecnie ustawiony na 32x32 kafelki, ale plansza zosta³a zaprojektowana jako kwadratowa mapa z mo¿liwoœci¹ zmiany rozmiaru.
+Ustawienia grup:
 
-## Status
+```csharp
+public static int PoliceStarMembers = 0;
+public static int CitizensStarMembers = 0;
+public static int[] GangStarMembers = { 3, 3 };
+public static bool CitizenSpawn = false;
+```
 
-Projekt jest aktualnie w trakcie rozwoju.
 
-Ju¿ zaimplementowano:
+## Jak uruchomiÄ‡ projekt
 
-- generowanie mapy
-- generowanie chodników
-- generowanie budynków
-- przypisywanie baz gangom
-- system renderowania
-- podstawowy ruch mieszkañców
-- uciekanie mieszkañców przed gangami
-- podstawowy ruch policji
+in proggres
 
-Nie zaimplementowano jeszcze:
 
-- ruchu gangów
-- walk miêdzy gangami
-- systemu przejmowania budynków
-- systemu pieniêdzy
-- systemu rekrutacji
-- zaawansowanego zachowania policji
+## ograniczenia
+
+in proggres
+
+## MoÅ¼liwe dalsze usprawnienia
+
+W przyszÅ‚oÅ›ci moÅ¼na dodaÄ‡:
+
+- peÅ‚ny system walki,
+- system ekonomii,
+- interfejs uÅ¼ytkownika,
+- sterowanie graczem,
+- lepszÄ… sztucznÄ… inteligencjÄ™ agentÃ³w,
+- lepszÄ… reakcjÄ™ policji,
+- uporzÄ…dkowanie nazw klas i metod,
+- zabezpieczenia przed nieskoÅ„czonymi pÄ™tlami.
+
+
+

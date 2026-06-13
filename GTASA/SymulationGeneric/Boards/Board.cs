@@ -7,17 +7,17 @@ using System.Collections.Generic;
 
 namespace GTASA.SymulationGeneric.Boards
 {
-    public class Board
+    public class Board // mapa gry
     {
-        private readonly int size;
+        private readonly int size; // wielkosc z Essentials
 
-        private Dictionary<Vector2, Cell> grid;
-        private List<Pavment> pavments;
-        private List<Building> buildings;
+        private Dictionary<Vector2, Cell> grid; // pozycja kafełka i co tam stoi
+        private List<Pavment> pavments; // lista wszystkich chodników po to aby np przejśc po wszystkich chodnikach bez sprwadzania całej mapy
+        private List<Building> buildings; //lista wszystkich budynków np żeby wylosowac budynek
 
-        private Citizens citizens;
+        private Citizens citizens; //referencja do grupy mieszkańców
 
-        public Board (int size)
+        public Board (int size)// konstruktor przygotowujący "puste pojejmniki"
         {
             this.size = size;
             this.grid = new Dictionary<Vector2, Cell>();
@@ -27,7 +27,7 @@ namespace GTASA.SymulationGeneric.Boards
            pavments = new List<Pavment>();
         }
 
-        public void Initialize(Citizens citizens)
+        public void Initialize(Citizens citizens) // tworzy całą mape 
         {
             this.citizens = citizens;
 
@@ -35,13 +35,13 @@ namespace GTASA.SymulationGeneric.Boards
             {
                 for (int y = 0; y < size; y++)
                 {
-                    grid[new Vector2(x, y)] = new EmptyCell();
+                    grid[new Vector2(x, y)] = new EmptyCell(); //tworzy pierwszo wszędzie psute pola
                 }
             }
 
-            GeneratePavment(Essentials.pavmentCount, Essentials.pavmentOffset);
-            GenerateBuilding();
-            GenerateNeighbors();
+            GeneratePavment(Essentials.pavmentCount, Essentials.pavmentOffset); // tworzy chodniki
+            GenerateBuilding(); // tworzy budynki
+            GenerateNeighbors(); // tworzy sąsiadów - łączy chodniki z chodnikami i budynki z budynkami
         }
 
 
@@ -58,7 +58,7 @@ namespace GTASA.SymulationGeneric.Boards
 
             int k = 0;
 
-            while (k != count)
+            while (k != count) // moze nie działać dla z małych map jak na razie
             {
                 int y = random.Next(3, size - 3);
                 int x = random.Next(3, size - 3);
@@ -93,40 +93,40 @@ namespace GTASA.SymulationGeneric.Boards
             }
         }
 
-        void GenerateBuilding()
+        void GenerateBuilding()// tworzenie budynku
         {
             for (int x = 0; x < size; x++)
             {
                 for (int y = 0; y < size; y++)
                 {
-                    if (grid[new Vector2(x, y)].GetCellType() == CellType.EmptyCell)
+                    if (grid[new Vector2(x, y)].GetCellType() == CellType.EmptyCell) // szukanie pustego budynku jesli tak to zacyznami budowe nowego budynku od tego miejsca
                     {
                         int subx = x;
                         int suby = y;
 
-                        while (subx < size && grid[new Vector2(subx, suby)].GetCellType() == CellType.EmptyCell)
+                        while (subx < size && grid[new Vector2(subx, suby)].GetCellType() == CellType.EmptyCell) // idziemy w prawo
                         {
                             subx++;
                         }
 
                         subx--;
 
-                        while (suby < size && grid[new Vector2(subx, suby)].GetCellType() == CellType.EmptyCell)
+                        while (suby < size && grid[new Vector2(subx, suby)].GetCellType() == CellType.EmptyCell) // idziemy w dół
                         {
-                            suby++;
+                            suby++; 
                         }
 
                         subx++;
 
-                        Building building = new Building(new Vector2(x, y), new Rectangle(x, y, subx, suby), citizens);
+                        Building building = new Building(new Vector2(x, y), new Rectangle(x, y, subx, suby), citizens); // tworzenie budynku 
 
-                        buildings.Add(building);
+                        buildings.Add(building);// dodanie buydnku
 
                         for (int i = x; i < subx; i++)
                         {
                             for (int j = y; j < suby; j++)
                             {
-                                grid[new Vector2(i, j)] = building;
+                                grid[new Vector2(i, j)] = building; // wpisanie budynku do grida- wszykite kafleki sta należą do jedneog budynku - jeden obiekt
                             }
                         }
                     }
@@ -140,7 +140,7 @@ namespace GTASA.SymulationGeneric.Boards
             {
                 for (int y = 0; y < size; y++)
                 {
-                    if (grid[new Vector2(x, y)].GetCellType() == CellType.Pavment)
+                    if (grid[new Vector2(x, y)].GetCellType() == CellType.Pavment) // szukanie chodnikow
                     {
                         Pavment pavment = (Pavment)grid[new Vector2(x, y)];
                         pavments.Add(pavment);
@@ -171,15 +171,15 @@ namespace GTASA.SymulationGeneric.Boards
         }
 
 
-        public void CheckNeighbor(Pavment pavment, Cell neighbor, int direction)
+        public void CheckNeighbor(Pavment pavment, Cell neighbor, int direction) // sprawdzanie co ejst obok chodnika
         {
-            if(neighbor.GetCellType() == CellType.Pavment)
+            if(neighbor.GetCellType() == CellType.Pavment) // spradzanie czy obok jest chodnik
             {
                 pavment.SetNeighbor(direction, (Pavment)neighbor);
             }
             else
             {
-                if(neighbor.GetCellType() == CellType.Building && !pavment.IsBuildingEntrace())
+                if(neighbor.GetCellType() == CellType.Building && !pavment.IsBuildingEntrace()) // jezeli bok chodnia jest budynek to dajemy tam wejście do budynku pod warunkiem ze nie ma juz tam choidnika
                 {
                     TryMakeEntrace((Building)neighbor, pavment, direction);
                 }
@@ -202,7 +202,7 @@ namespace GTASA.SymulationGeneric.Boards
             }
         }
 
-        public void Update(GameTime gameTime)
+        public void Update(GameTime gameTime) //aktrualzijce tylko budynki
         {
             foreach(Building building in buildings)
             {
@@ -210,7 +210,7 @@ namespace GTASA.SymulationGeneric.Boards
             }
         }
 
-        public void Draw(SpriteBatch spriteBatch)
+        public void Draw(SpriteBatch spriteBatch) // rysuje mape
         {
 
             foreach (Pavment cell in pavments)
@@ -225,13 +225,13 @@ namespace GTASA.SymulationGeneric.Boards
         }
 
 
-       public Cell GetCell(Vector2 absolutPosition)
+       public Cell GetCell(Vector2 absolutPosition) // zamiana pozycji pikselowej na kafelkmowa(XD, nie iwem jak to nazwac)
        {
-            return grid[new Vector2(MathF.Floor(absolutPosition.X / 16), MathF.Floor(absolutPosition.Y / 16))];
+            return grid[new Vector2(MathF.Floor(absolutPosition.X / Essentials.cellSize), MathF.Floor(absolutPosition.Y / Essentials.cellSize))];
        }
 
 
-        public List<Building> GetGangBuildings(GroupAbstract group)
+        public List<Building> GetGangBuildings(GroupAbstract group) //zwraca wszystkie budynki które należą do danej grupy
         {
             List<Building> result = new List<Building>();
 
@@ -246,7 +246,7 @@ namespace GTASA.SymulationGeneric.Boards
             return result;
         }
 
-        public List<Building> GetAllBuildingsUnderAttack()
+        public List<Building> GetAllBuildingsUnderAttack() // zwwraca wsszytkie budynki w trakcie ataku
         {
             List<Building> result = new List<Building>();
 
@@ -263,13 +263,13 @@ namespace GTASA.SymulationGeneric.Boards
 
 
 
-        public Cell GetRandomPavment()
+        public Cell GetRandomPavment() // zwraca losowy choidnik
         {
             Random random = new Random();
             return pavments[random.Next(0, pavments.Count)];
         }
 
-        public Cell GetRandomBorderPavment()
+        public Cell GetRandomBorderPavment() //losowe końcówki chodników do respienia mieszkańców
         {
             List<Pavment> borderPavments = new List<Pavment>(); 
 
@@ -285,7 +285,7 @@ namespace GTASA.SymulationGeneric.Boards
             return borderPavments[random.Next(0, borderPavments.Count)];
         }
 
-        public Building GetFreeSpawnBuilding(Group group)
+        public Building GetFreeSpawnBuilding(Group group) // wolny buydenk do pojawienia sie bazy gangu bez przypadku gdy jest za malo budynku
         {
             Random random = new Random();
             int index = random.Next(0, buildings.Count);
@@ -299,7 +299,7 @@ namespace GTASA.SymulationGeneric.Boards
             return buildings[index];
         }
 
-        public Building GetRandomFreeBuilding(GroupAbstract groupAbstract)
+        public Building GetRandomFreeBuilding(GroupAbstract groupAbstract) // losowy budynek który nioe należy do tej grupy
         {
             Random random = new Random();
             int index = random.Next(0, buildings.Count);

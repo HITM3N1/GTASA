@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace GTASA.SymulationGeneric.Groups.Agents
 {
-    public class Agent
+    public class Agent//opisuje pojedyncza postac w grze
     {
         // Group which Agent belongs to
         GroupAbstract group;
@@ -37,7 +37,7 @@ namespace GTASA.SymulationGeneric.Groups.Agents
         //Check if agent can get new target or is locked by interaction
         bool canBeMoved;
 
-        bool isBeingRecruted;
+        bool isBeingRecruted;//sprawdza czy agent jest recrutowany (mieszkaniec)
 
         GroupAbstract newOccupation;
 
@@ -74,13 +74,14 @@ namespace GTASA.SymulationGeneric.Groups.Agents
             spawnCell.AddAgent(this);
         }
 
+
         public void Update(GameTime gameTime)
         {
             float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             
 
-            if(isBeingRecruted)
+            if(isBeingRecruted)//sprwadzamyu czy agent jest rekrutowany
             {
                 if(recrutationTimmer ==  0f)
                 {
@@ -88,7 +89,7 @@ namespace GTASA.SymulationGeneric.Groups.Agents
 
                     if(group != newOccupation)
                     {
-                        newOccupation.AddAgent(this);
+                        newOccupation.AddAgent(this); // dodanie agenta do gangu
                     }
                 }
                 else
@@ -102,7 +103,7 @@ namespace GTASA.SymulationGeneric.Groups.Agents
             }
             else
             {
-                if (targetPath.Count() == 0 && canBeMoved && !isMoving)
+                if (targetPath.Count() == 0 && canBeMoved && !isMoving)//gdy nie ma celu losowo/domyślnnie sie porusza
                 {
                     Wander();
                 }
