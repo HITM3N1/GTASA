@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace GTASA.SymulationGeneric.Groups.Agents
 {
-    public class Agent
+    public class Agent//opisuje pojedyncza postac w grze
     {
         // Group which Agent belongs to
         GroupAbstract group;
@@ -37,7 +37,7 @@ namespace GTASA.SymulationGeneric.Groups.Agents
         //Check if agent can get new target or is locked by interaction
         bool canBeMoved;
 
-        bool isBeingRecruted;
+        bool isBeingRecruted;//sprawdza czy agent jest recrutowany (mieszkaniec)
 
         GroupAbstract newOccupation;
 
@@ -62,16 +62,7 @@ namespace GTASA.SymulationGeneric.Groups.Agents
             this.absolutPosition = spawnCell.GetSpawnAbsolutePosition();
             this.targetPath = new Queue<Vector2>();
             this.direction = null;
-            
-            if(Essentials.GroupSettings.ranodmizeSpeed)
-            {
-                this.speed = ((Essentials.random.Next( (int)((0 - Essentials.speed) * 100), (int)((Essentials.speed) * 100)) / 200f + Essentials.speed) );
-            }
-            else
-            {
-                this.speed = Essentials.speed;
-            }
-            this.speed *= group.GetSpeedModifier();
+            this.speed = Essentials.speed * group.GetSpeedModifier();
             this.isMoving = false;
             this.canBeMoved = true;
             this.moveTimer = 0f;
@@ -83,26 +74,27 @@ namespace GTASA.SymulationGeneric.Groups.Agents
             spawnCell.AddAgent(this);
         }
 
+
         public void Update(GameTime gameTime)
         {
             float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            
 
-            if(isBeingRecruted)
+
+            if (isBeingRecruted)//sprwadzamyu czy agent jest rekrutowany
             {
-                if(recrutationTimmer ==  0f)
+                if (recrutationTimmer == 0f)
                 {
                     recrutationTimmer = (float)gameTime.TotalGameTime.TotalSeconds;
 
-                    if(group != newOccupation)
+                    if (group != newOccupation)
                     {
-                        newOccupation.AddAgent(this);
+                        newOccupation.AddAgent(this); // dodanie agenta do gangu
                     }
                 }
                 else
                 {
-                    if((float)gameTime.TotalGameTime.TotalSeconds - recrutationTimmer > Essentials.GroupSettings.timeToRecrute)
+                    if ((float)gameTime.TotalGameTime.TotalSeconds - recrutationTimmer > Essentials.GroupSettings.timeToRecrute)
                     {
                         group = newOccupation;
                         UnlockAgent();
@@ -111,7 +103,7 @@ namespace GTASA.SymulationGeneric.Groups.Agents
             }
             else
             {
-                if (targetPath.Count() == 0 && canBeMoved && !isMoving)
+                if (targetPath.Count() == 0 && canBeMoved && !isMoving)//gdy nie ma celu losowo/domyślnnie sie porusza
                 {
                     Wander();
                 }
@@ -157,9 +149,9 @@ namespace GTASA.SymulationGeneric.Groups.Agents
                     }
                 }
             }
-           
 
-            
+
+
 
         }
 
@@ -206,12 +198,12 @@ namespace GTASA.SymulationGeneric.Groups.Agents
 
             foreach (Agent agent in agentsNearby)
             {
-                if(agent.GetGroup() is Police)
+                if (agent.GetGroup() is Police)
                 {
                     return;
                 }
 
-                if(agent.GetGroup() is Citizens && !agent.IsBeingRecruted())
+                if (agent.GetGroup() is Citizens && !agent.IsBeingRecruted())
                 {
                     citizensNearby.Add(agent);
                 }
@@ -219,11 +211,13 @@ namespace GTASA.SymulationGeneric.Groups.Agents
 
             if (citizensNearby.Count > 0)
             {
-                int i = Essentials.random.Next(0, 100);
+                Random random = new Random();
 
-                if(i < Essentials.GroupSettings.RecrutationChance)
+                int i = random.Next(0, 100);
+
+                if (i < Essentials.GroupSettings.RecrutationChance)
                 {
-                    Agent recrute = citizensNearby[Essentials.random.Next(0, citizensNearby.Count)];
+                    Agent recrute = citizensNearby[random.Next(0, citizensNearby.Count)];
 
                     recrute.LockAgent(group);
                     LockAgent(group);
@@ -233,6 +227,8 @@ namespace GTASA.SymulationGeneric.Groups.Agents
 
         public void Wander()
         {
+            Random random = new Random();
+
             if (cell.GetCellType() == CellType.Pavment)
             {
                 Pavment actuallCell = (Pavment)cell;
@@ -253,18 +249,18 @@ namespace GTASA.SymulationGeneric.Groups.Agents
                 {
                     if (actuallCell.pavmentsNearby.Count() == 1)
                     {
-                        if(!actuallCell.pavmentsNearby.ContainsKey(direction.Value))
+                        if (!actuallCell.pavmentsNearby.ContainsKey(direction.Value))
                         {
                             direction = Math.Abs(direction.Value + 2) % 4;
                         }
-                        
+
                         targetPath.Enqueue(actuallCell.pavmentsNearby[direction.Value].GetAbsolutPosition());
 
                     }
 
                     if (actuallCell.pavmentsNearby.Count() == 4)
                     {
-                        int i = Essentials.random.Next(1, 6);
+                        int i = random.Next(1, 6);
 
                         if (i == 1)
                         {
@@ -285,13 +281,13 @@ namespace GTASA.SymulationGeneric.Groups.Agents
                     }
                 }
             }
-            else if(cell.GetCellType() == CellType.Building)
-            { 
+            else if (cell.GetCellType() == CellType.Building)
+            {
                 Building building = (Building)cell;
 
-                if(building.IsAttackEnded())
+                if (building.IsAttackEnded())
                 {
-                    if(absolutPosition == building.GetExitPos1())
+                    if (absolutPosition == building.GetExitPos1())
                     {
                         targetPath.Enqueue(building.GetExitPos2());
                     }
@@ -304,14 +300,14 @@ namespace GTASA.SymulationGeneric.Groups.Agents
                 }
                 else
                 {
-                    int x = (Essentials.random.Next(0, 2) == 0 ? 2 : -2) * Essentials.random.Next(0, 2);
-                    int y = x == 0 ? (Essentials.random.Next(0, 2) == 0 ? 2 : -2) : 0;
+                    int x = (random.Next(0, 2) == 0 ? 2 : -2) * random.Next(0, 2);
+                    int y = x == 0 ? (random.Next(0, 2) == 0 ? 2 : -2) : 0;
 
                     Vector2 target = Vector2.Clamp(new Vector2(x + absolutPosition.X, y + absolutPosition.Y), new Vector2(building.bounds.X * 16, building.bounds.Y * 16), new Vector2((building.bounds.Width - 1) * 16, (building.bounds.Height - 1) * 16));
 
                     targetPath.Enqueue(target);
                 }
-                
+
             }
         }
 
@@ -332,7 +328,6 @@ namespace GTASA.SymulationGeneric.Groups.Agents
         }
     }
 }
-       
-       
-    
+
+
 

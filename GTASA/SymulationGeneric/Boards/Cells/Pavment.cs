@@ -4,12 +4,14 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+
 
 namespace GTASA.SymulationGeneric.Boards.Cells
 {
+
     public class Pavment : Cell
     {
+        Random random = new Random();
         private Vector2 cords;
         private CellType type;
         public Dictionary<int, Pavment> pavmentsNearby;
@@ -28,7 +30,7 @@ namespace GTASA.SymulationGeneric.Boards.Cells
             this.isBuildingEntrace = false;
             this.agentsInside = new List<Agent>();
 
-            int r = Essentials.random.Next(0, 100);
+            int r = random.Next(0, 100);
 
             if(r < 85)
             {
