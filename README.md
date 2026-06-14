@@ -153,13 +153,81 @@ public static float RENDER_ZOOM = 2f;
 
 ## How to Run the Project
 
-...
+There are two main ways to run the project: using Visual Studio or using the terminal.
+
+### Option 1: Run with Visual Studio 2022 or newer
+
+Requirements:
+
+- Windows,
+- Visual Studio 2022 or newer,
+- .NET 8 SDK,
+- MonoGame packages.
+
+Steps:
+
+1. Download or clone the repository.
+2. Open the project folder.
+3. Open the solution file:
+
+```text
+GTASA.slnx
+```
+
+4. Wait for Visual Studio to restore NuGet packages.
+5. Select the startup project if needed.
+6. Build the project using:
+
+```text
+Build → Build Solution
+```
+
+7. Run the project using the green Start button or by pressing:
+
+```text
+F5
+```
+
+If the project does not start, make sure that the required .NET SDK and MonoGame packages are installed correctly.
+
+Video tutorial used as a reference:
+
+```text
+https://www.youtube.com/watch?v=F1Sj14ccuBQ
+```
+
+---
+
+### Option 2: Run from the terminal
+
+Requirements:
+
+- Windows,
+- .NET 8 SDK installed,
+- terminal opened in the main project folder.
+
+Commands:
+
+```bash
+dotnet restore
+dotnet build
+dotnet run --project GTASA/GTASA.csproj
+```
+
+If the command does not work, check whether the path to the `.csproj` file is correct.
+
+The project is designed mainly for Windows because it uses MonoGame WindowsDX.
 
 ---
 
 ## Limitations
 
-...
+The current version of the project has several limitations:
+
+- The simulation runs automatically and does not include player controls.
+- The project is mainly designed for Windows because it uses MonoGame WindowsDX.
+
+---
 
 ## Possible Future Improvements
 
@@ -170,6 +238,6 @@ In the future, the project could include:
 - a user interface,
 - better artificial intelligence for agents,
 - better police behavior,
-- improved citizen behavior,
+- improved citizen behavior
 
 ---
