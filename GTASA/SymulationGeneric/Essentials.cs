@@ -9,11 +9,14 @@ namespace GTASA.SymulationGeneric
 {
     public static class Essentials
     {
+        public static Random random = new Random();
+
         public static int mapSize = 15;
         public static int pavmentCount = 2;
         public static int pavmentOffset = 3;
         public static int cellSize = 16;
         public static int gangsCount = 2;
+
 
         public static float speed = 0.2f;
 

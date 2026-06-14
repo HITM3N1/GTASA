@@ -17,14 +17,13 @@ namespace GTASA.SymulationGeneric.Boards
 
         private Citizens citizens;
 
-        public Board (int size)
+        public Board(int size)
         {
             this.size = size;
             this.grid = new Dictionary<Vector2, Cell>();
-            
 
-           buildings = new List<Building>();
-           pavments = new List<Pavment>();
+            buildings = new List<Building>();
+            pavments = new List<Pavment>();
         }
 
         public void Initialize(Citizens citizens)
@@ -44,9 +43,10 @@ namespace GTASA.SymulationGeneric.Boards
             GenerateNeighbors();
         }
 
-
         private void GeneratePavment(int count, int minimaloffset)
         {
+            Random random = new Random();
+
             Vector2[] centers = new Vector2[count];
 
             for (int i = 0; i < count; i++)
@@ -58,14 +58,15 @@ namespace GTASA.SymulationGeneric.Boards
 
             while (k != count)
             {
-                int y = Essentials.random.Next(3, size - 3);
-                int x = Essentials.random.Next(3, size - 3);
+                int y = random.Next(3, size - 3);
+                int x = random.Next(3, size - 3);
 
                 bool canBeANewCenter = true;
 
                 for (int i = 0; i < count; ++i)
                 {
-                    if (Math.Abs(centers[i].X - x) < minimaloffset || Math.Abs(centers[i].Y - y) < minimaloffset)
+                    if (Math.Abs(centers[i].X - x) < minimaloffset ||
+                        Math.Abs(centers[i].Y - y) < minimaloffset)
                     {
                         canBeANewCenter = false;
                     }
@@ -116,7 +117,11 @@ namespace GTASA.SymulationGeneric.Boards
 
                         subx++;
 
-                        Building building = new Building(new Vector2(x, y), new Rectangle(x, y, subx, suby), citizens);
+                        Building building = new Building(
+                            new Vector2(x, y),
+                            new Rectangle(x, y, subx, suby),
+                            citizens
+                        );
 
                         buildings.Add(building);
 
@@ -143,10 +148,9 @@ namespace GTASA.SymulationGeneric.Boards
                         Pavment pavment = (Pavment)grid[new Vector2(x, y)];
                         pavments.Add(pavment);
 
-
                         if (x > 0)
                         {
-                            CheckNeighbor(pavment,  grid[new Vector2(x - 1, y)], 0);
+                            CheckNeighbor(pavment, grid[new Vector2(x - 1, y)], 0);
                         }
 
                         if (y > 0)
@@ -168,16 +172,15 @@ namespace GTASA.SymulationGeneric.Boards
             }
         }
 
-
         public void CheckNeighbor(Pavment pavment, Cell neighbor, int direction)
         {
-            if(neighbor.GetCellType() == CellType.Pavment)
+            if (neighbor.GetCellType() == CellType.Pavment)
             {
                 pavment.SetNeighbor(direction, (Pavment)neighbor);
             }
             else
             {
-                if(neighbor.GetCellType() == CellType.Building && !pavment.IsBuildingEntrace())
+                if (neighbor.GetCellType() == CellType.Building && !pavment.IsBuildingEntrace())
                 {
                     TryMakeEntrace((Building)neighbor, pavment, direction);
                 }
@@ -186,7 +189,7 @@ namespace GTASA.SymulationGeneric.Boards
 
         public bool TryMakeEntrace(Building building, Pavment pavment, int directionFromPavmentToBuilding)
         {
-            if(building.IsExitSet())
+            if (building.IsExitSet())
             {
                 return true;
             }
@@ -195,14 +198,13 @@ namespace GTASA.SymulationGeneric.Boards
                 building.SetExit(directionFromPavmentToBuilding, pavment);
                 pavment.SetBuildingEntrace(directionFromPavmentToBuilding, building);
 
-
                 return true;
             }
         }
 
         public void Update(GameTime gameTime)
         {
-            foreach(Building building in buildings)
+            foreach (Building building in buildings)
             {
                 building.Update(gameTime);
             }
@@ -210,7 +212,6 @@ namespace GTASA.SymulationGeneric.Boards
 
         public void Draw(SpriteBatch spriteBatch)
         {
-
             foreach (Pavment cell in pavments)
             {
                 cell.Draw(spriteBatch);
@@ -222,12 +223,13 @@ namespace GTASA.SymulationGeneric.Boards
             }
         }
 
-
-       public Cell GetCell(Vector2 absolutPosition)
-       {
-            return grid[new Vector2(MathF.Floor(absolutPosition.X / 16), MathF.Floor(absolutPosition.Y / 16))];
-       }
-
+        public Cell GetCell(Vector2 absolutPosition)
+        {
+            return grid[new Vector2(
+                MathF.Floor(absolutPosition.X / 16),
+                MathF.Floor(absolutPosition.Y / 16)
+            )];
+        }
 
         public List<Building> GetGangBuildings(GroupAbstract group)
         {
@@ -259,35 +261,36 @@ namespace GTASA.SymulationGeneric.Boards
             return result;
         }
 
-
-
         public Cell GetRandomPavment()
         {
-            return pavments[Essentials.random.Next(0, pavments.Count)];
+            Random random = new Random();
+            return pavments[random.Next(0, pavments.Count)];
         }
 
         public Cell GetRandomBorderPavment()
         {
-            List<Pavment> borderPavments = new List<Pavment>(); 
+            List<Pavment> borderPavments = new List<Pavment>();
 
-            foreach(Pavment pavment in pavments)
+            foreach (Pavment pavment in pavments)
             {
-                if(pavment.pavmentsNearby.Count == 1)
+                if (pavment.pavmentsNearby.Count == 1)
                 {
                     borderPavments.Add(pavment);
                 }
             }
 
-            return borderPavments[Essentials.random.Next(0, borderPavments.Count)];
+            Random random = new Random();
+            return borderPavments[random.Next(0, borderPavments.Count)];
         }
 
         public Building GetFreeSpawnBuilding(Group group)
         {
-            int index = Essentials.random.Next(0, buildings.Count);
+            Random random = new Random();
+            int index = random.Next(0, buildings.Count);
 
             while (!buildings[index].Isfree())
             {
-                index = Essentials.random.Next(0, buildings.Count);
+                index = random.Next(0, buildings.Count);
             }
 
             buildings[index].SetOccupation(group);
@@ -296,11 +299,12 @@ namespace GTASA.SymulationGeneric.Boards
 
         public Building GetRandomFreeBuilding(GroupAbstract groupAbstract)
         {
-            int index = Essentials.random.Next(0, buildings.Count);
+            Random random = new Random();
+            int index = random.Next(0, buildings.Count);
 
             while (buildings[index].GetOccupation() == groupAbstract)
             {
-                index = Essentials.random.Next(0, buildings.Count);
+                index = random.Next(0, buildings.Count);
             }
 
             return buildings[index];
@@ -310,10 +314,7 @@ namespace GTASA.SymulationGeneric.Boards
         {
             this.citizens = citizens;
         }
-        
 
-
-        
         /*
         public Vector2? GetNeighborInDirection(Vector2 position, int directionIndex)
         {
@@ -330,11 +331,11 @@ namespace GTASA.SymulationGeneric.Boards
             {
                 return new Vector2(nx * Essentials.cellSize, ny * Essentials.cellSize);
             }
+
             return null;
         }
 
         private bool InBounds(int x, int y) => x >= 0 && x < size && y >= 0 && y < size;
-
         */
     }
 }
