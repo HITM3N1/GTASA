@@ -2,39 +2,54 @@
 using GTASA.SymulationGeneric.Groups.Agents;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using SharpDX.XAudio2;
 using System.Collections.Generic;
-using System.Reflection;
-
 
 namespace GTASA.SymulationGeneric.Boards.Cells
 {
+    //**************************************************************************************//
+    //***** Klasa : Pavment - dziedziczy po Cell                                       *****//
+    //**************************************************************************************//
+    //***** Jedna z trzech rodzajów komórek dostępnych w symulacji, jest to komórka    *****//
+    //***** odpowiadająca za logikę wszystich budynków na mapie                        *****//
+    //**************************************************************************************//
+
     public class Building : Cell
     {
-        private Vector2 cords;
+        //type - typ komórki
         private CellType type;
+
+        // nounds - przechowuje granice w jakich znajduje się cały budynek
         public Rectangle bounds;
 
+        // exit - przechowuje kierunek oraz chodnik który znajduje się przy wyjściu z budynku
         private (int, Pavment) exit;
+
+        // hasExit - przechowuje informacje o tym czy budynek ma wyjście
         private bool hasExit;
 
+        // exitAbsoultPosition - koordynaty wyjścia
         private Vector2 exitAbsoultPosition;
 
+        // agentsInside - Lista agentów znajdujących się wewnątrz budynku
         private List<Agent> agentsInside;
 
+        // occupation - rodzaj grupy do której aktualnie należy budynek
         private GroupAbstract occupation;
 
+        // isAttackStarted - przechowuje informacje o tym czy zaczął się atak na budynek
         private bool isAttackStarted;
 
+        // isUnderAttack - przechowuje informację o tym czy agenci są już w środku budynku i go atakują
         private bool isUnderAttack;
 
+        // timeWhenOcccupationStarted - czas w którym rozpoczął się atak na budynek
         private double timeWhenOcccupationStarted;
 
+        // isPoliceInside - przechowuje informacje o tym czy w budynku jest policja
         private bool isPoliceInside;
 
-        public Building(Vector2 cords, Rectangle bounds, GroupAbstract occupation)
+        public Building(Rectangle bounds, GroupAbstract occupation)
         {
-            this.cords = cords;
             this.type = CellType.Building;
             this.occupation = occupation;
             this.hasExit = false;
@@ -45,24 +60,11 @@ namespace GTASA.SymulationGeneric.Boards.Cells
             this.timeWhenOcccupationStarted = 0;
         }
 
+
+        //CallAgents - przywołuje agentów konretnej grupy do chodnia przy wyjści dodając dodatkowy wektor którym jest środek budnky przez to tak na prawdę to chodni przywołuje agentów którzy następnie od razu wchodzą do budynku
         public void CallAgents(int k, Group group)
         {
             exit.Item2.CallAgents(k, group, GetEntryPath(), new HashSet<Pavment>());
-        }
-
-        public void StartAttack()
-        {
-            isAttackStarted = true;
-        }
-
-        public bool IsPoliceInside()
-        {
-            return isPoliceInside;
-        }
-
-        public bool IsAttackEnded()
-        {
-            return !isAttackStarted;
         }
 
         public void Update(GameTime gameTime)
@@ -94,7 +96,7 @@ namespace GTASA.SymulationGeneric.Boards.Cells
                 }
                 else
                 {
-                    if (gameTime.TotalGameTime.TotalSeconds - timeWhenOcccupationStarted >= Essentials.GroupSettings.timeToOccupyBuilding)
+                    if (gameTime.TotalGameTime.TotalSeconds - timeWhenOcccupationStarted >= Essentials.GroupSettings.TIME_TO_TAKE_OVER_BUILDING)
                     {
                         Dictionary<GroupAbstract, List<Agent>> GangMembersCountInside = new Dictionary<GroupAbstract, List<Agent>>();
 
@@ -153,6 +155,79 @@ namespace GTASA.SymulationGeneric.Boards.Cells
             }
         }
 
+        //Draw - funckja rysująca budynek, rozróznia komórki graniczące, rogi i sam środek
+
+        public void Draw(SpriteBatch spriteBatch)
+        {
+            GroupColor color = occupation != null ? occupation.GetColor() : GroupColor.White;
+
+            for (int x = bounds.X; x < bounds.Width; x++)
+            {
+                for (int y = bounds.Y; y < bounds.Height; y++)
+                {
+                    if (x > bounds.X && y > bounds.Y && x < bounds.Width - 1 && y < bounds.Height - 1)
+                    {
+                        spriteBatch.Draw(Essentials.TEXTURES_BUILDING[(TextureType.B0, color)], new Vector2(16 * x, 16 * y), Color.White);
+                    }
+                    else
+                    {
+                        if (x == bounds.X)
+                        {
+                            spriteBatch.Draw(Essentials.TEXTURES_BUILDING[(TextureType.B8, color)], new Vector2(16 * x, 16 * y), Color.White);
+                        }
+
+                        if (x == (bounds.Width - 1))
+                        {
+                            spriteBatch.Draw(Essentials.TEXTURES_BUILDING[(TextureType.B4, color)], new Vector2(16 * x, 16 * y), Color.White);
+                        }
+
+                        if (y == bounds.Y)
+                        {
+                            spriteBatch.Draw(Essentials.TEXTURES_BUILDING[(TextureType.B2, color)], new Vector2(16 * x, 16 * y), Color.White);
+                        }
+
+                        if (y == (bounds.Height - 1))
+                        {
+                            spriteBatch.Draw(Essentials.TEXTURES_BUILDING[(TextureType.B6, color)], new Vector2(16 * x, 16 * y), Color.White);
+                        }
+
+
+
+
+                        if (x == bounds.X && y == bounds.Y)
+                        {
+                            spriteBatch.Draw(Essentials.TEXTURES_BUILDING[(TextureType.B1, color)], new Vector2(16 * x, 16 * y), Color.White);
+                        }
+
+                        if (x == bounds.Width - 1 && y == bounds.Y)
+                        {
+                            spriteBatch.Draw(Essentials.TEXTURES_BUILDING[(TextureType.B3, color)], new Vector2(16 * x, 16 * y), Color.White);
+                        }
+
+                        if (x == bounds.Width - 1 && y == bounds.Height - 1)
+                        {
+                            spriteBatch.Draw(Essentials.TEXTURES_BUILDING[(TextureType.B5, color)], new Vector2(16 * x, 16 * y), Color.White);
+                        }
+
+                        if (x == bounds.X && y == bounds.Height - 1)
+                        {
+                            spriteBatch.Draw(Essentials.TEXTURES_BUILDING[(TextureType.B7, color)], new Vector2(16 * x, 16 * y), Color.White);
+                        }
+
+                    }
+                }
+            }
+
+
+            spriteBatch.Draw(Essentials.TEXTURES_BUILDING[(TextureType.D, color)], exitAbsoultPosition, Color.White);
+
+        }
+
+
+        //--------------------------------
+        //      GETTERY I SETTERY
+        //--------------------------------
+        
 
         public bool IsUnderAttack()
         {
@@ -172,7 +247,7 @@ namespace GTASA.SymulationGeneric.Boards.Cells
 
         public void SetExit(int directionFromPavmentToBuilding , Pavment pavment)
         {
-            exitAbsoultPosition = pavment.GetAbsolutPosition() + Essentials.direction[directionFromPavmentToBuilding] * 16;
+            exitAbsoultPosition = pavment.GetAbsolutPosition() + Essentials.DIRECTIONS[directionFromPavmentToBuilding] * 16;
 
             exit = ((directionFromPavmentToBuilding + 2) % 4,  pavment);
             hasExit = true;
@@ -185,7 +260,7 @@ namespace GTASA.SymulationGeneric.Boards.Cells
 
         public bool Isfree()
         {
-            return occupation == null;
+            return occupation is Citizens;
         }
 
         public void SetOccupation(Group group)
@@ -234,70 +309,21 @@ namespace GTASA.SymulationGeneric.Boards.Cells
             agentsInside.Remove(agent);
         }
 
-        public void Draw(SpriteBatch spriteBatch)
+        public void StartAttack()
         {
-            GroupColor color = occupation != null ? occupation.GetColor() : GroupColor.White;
-
-            for (int x = bounds.X; x < bounds.Width; x++)
-            {
-                for (int y = bounds.Y; y < bounds.Height; y++)
-                {
-                    if (x > bounds.X && y > bounds.Y && x < bounds.Width - 1 && y < bounds.Height - 1)
-                    {
-                        spriteBatch.Draw(Essentials.texturesBuilding[(TextureType.B0, color)], new Vector2(16 * x, 16 * y), Color.White);
-                    }
-                    else
-                    {
-                        if (x == bounds.X)
-                        {
-                            spriteBatch.Draw(Essentials.texturesBuilding[(TextureType.B8, color)], new Vector2(16 * x, 16 * y), Color.White);
-                        }
-
-                        if (x == (bounds.Width - 1))
-                        {
-                            spriteBatch.Draw(Essentials.texturesBuilding[(TextureType.B4, color)], new Vector2(16 * x, 16 * y), Color.White);
-                        }
-
-                        if (y == bounds.Y)
-                        {
-                            spriteBatch.Draw(Essentials.texturesBuilding[(TextureType.B2, color)], new Vector2(16 * x, 16 * y), Color.White);
-                        }
-
-                        if (y == (bounds.Height - 1))
-                        {
-                            spriteBatch.Draw(Essentials.texturesBuilding[(TextureType.B6, color)], new Vector2(16 * x, 16 * y), Color.White);
-                        }
-
-
-
-
-                        if (x == bounds.X && y == bounds.Y)
-                        {
-                            spriteBatch.Draw(Essentials.texturesBuilding[(TextureType.B1, color)], new Vector2(16 * x, 16 * y), Color.White);
-                        }
-
-                        if (x == bounds.Width - 1 && y == bounds.Y)
-                        {
-                            spriteBatch.Draw(Essentials.texturesBuilding[(TextureType.B3, color)], new Vector2(16 * x, 16 * y), Color.White);
-                        }
-
-                        if (x == bounds.Width - 1 && y == bounds.Height - 1)
-                        {
-                            spriteBatch.Draw(Essentials.texturesBuilding[(TextureType.B5, color)], new Vector2(16 * x, 16 * y), Color.White);
-                        }
-
-                        if (x == bounds.X && y == bounds.Height - 1)
-                        {
-                            spriteBatch.Draw(Essentials.texturesBuilding[(TextureType.B7, color)], new Vector2(16 * x, 16 * y), Color.White);
-                        }
-                        
-                    }
-                }
-            }
-
-
-            spriteBatch.Draw(Essentials.texturesBuilding[(TextureType.D, color)], exitAbsoultPosition, Color.White);
-
+            isAttackStarted = true;
         }
+
+        public bool IsPoliceInside()
+        {
+            return isPoliceInside;
+        }
+
+        public bool IsAttackEnded()
+        {
+            return !isAttackStarted;
+        }
+
+        
     }
 }

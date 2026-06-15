@@ -1,124 +1,139 @@
-﻿using GTASA.SymulationGeneric.Boards; // daje dostęp do klasy board
-using GTASA.SymulationGeneric.Groups; // daje dostęp do klas citizens Police Gang
-using GTASA.SymulationGeneric.Groups.Agents;
+﻿using GTASA.SymulationGeneric.Boards;
+using GTASA.SymulationGeneric.Groups;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content; //daje nam obeikty z folderu content
-using Microsoft.Xna.Framework.Graphics; // SpriteBatch i SampleState - rzczy potrzebne do rysowania
+using Microsoft.Xna.Framework.Content; 
+using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 
 namespace GTASA.SymulationGeneric
 {
-    public class Symulation // główny koordynato świata
+    //**************************************************************************************//
+    //***** Klasa : Symulation                                                         *****//
+    //**************************************************************************************//
+    //***** Główna klasa symulacji, odpowiada za koordynowanie całego działania        *****//
+    //**************************************************************************************//
+
+    public class Symulation
     {
-        Board tab; // mapa gry
+        // _board - Główny obiekt klasy Board, odpowiada za działanie całej tablicy po której poruszają się agenci.
+        private Board _board;
 
-        Citizens citizens; // mieszkańcy
-        Police police; // policja
-        List<Gang> gangs; // lista gangów
-        Matrix cameraMatrix; // macierz kamery która powiększa obraz
+        // _citizens - Główny obiekt klasy Citizens, odpowiada za działanie grupy obywateli.
+        private Citizens _citizens;
 
-        int startPopulation; // to zapmiętuje ile agentów powinno być na początku (jeżeli ta wartosc spadła to CitizenSpawn może dodac nowych mieszkańców)
+        // _police - Główny obiekt klasy Police, odpowiada za działanie grupy policji.
+        private Police _police;
+
+        // _gangs - Lista obiektów klasy Gang, odpowiada za działanie grupy przestępczych.
+        private List<Gang> _gangs;
+
+        // startPopulation - początkowa ilość wszystki agentów nazywana też początkową populacją
+        private int startPopulation;
+
+        // cameraMatrix - Macierz obsługująca wyświetlanie oraz zoomowanie kamery.
+        Matrix cameraMatrix; 
 
 
-        public Symulation() //konstruktor
+        
+        // Konstruktor - inicjalizuje działanie całej symulacji, tworzy wszystkie potrzebne obiekty oraz ustawia ich wartości początkowe.
+        public Symulation()
         {
-            Essentials.Initialize(); // inicjalizacja podstawowanych danych z klasy Essentials
-            cameraMatrix = Matrix.CreateScale(Essentials.RENDER_ZOOM, Essentials.RENDER_ZOOM, 1f); // ustawienia kamrey
-            gangs = new List<Gang>(); // tworzenie pustej listy gangów na początku
+            Essentials.Initialize(); 
+            cameraMatrix = Matrix.CreateScale(Essentials.RENDER_ZOOM, Essentials.RENDER_ZOOM, 1f);
 
-            tab = new Board(Essentials.mapSize); // tworzenie mapy
-            tab.Initialize(citizens);
+            // Tworzenie obiektów klas.
+            _gangs = new List<Gang>(); 
+            _board = new Board(Essentials.MAP_SIZE);
+            _citizens = new Citizens(_board);
+            _police = new Police(_board);
+             
+            // Liczenie populacji startowej
+            startPopulation = Essentials.GroupSettings.POLICE_BASE_AGENT_COUNT + Essentials.GroupSettings.CITIZENS_BASE_AGENT_COUNT; 
 
-            citizens = new Citizens(tab); // tworzenie mieszkańców
-            tab.SetCitizens(citizens);
-
-            police = new Police(tab); // tworzenie policji
-
-            startPopulation = Essentials.GroupSettings.PoliceStarMembers + Essentials.GroupSettings.CitizensStarMembers; // liczenie początkowej liczby populacji
-
-            for (int i = 0; i < Essentials.gangsCount; i++) // dodanie do liczby populacji dwóch gangów osobno i stworzenie gangów
+            for (int i = 0; i < Essentials.GroupSettings.GANGS_COUNT; i++) 
             {
-                startPopulation += Essentials.GroupSettings.GangStarMembers[i];
-                gangs.Add(new Gang(i, Essentials.GroupSettings.GangColors[i], tab));
+                startPopulation += Essentials.GroupSettings.GANGS_BASE_AGENT_COUNT[i];
+                _gangs.Add(new Gang(i, Essentials.GroupSettings.GANGS_COLOR[i], _board));
             }
 
+            //Inicjalizacja klas.
+            _board.Initialize(_citizens);
 
-            foreach (Gang gang in gangs)
+            foreach (Gang gang in _gangs)
             {
-                gang.Initialize(); // inicjalizajca gangów
+                gang.Initialize(); 
             }
 
-            citizens.Initialize(tab); // inicjalizacja mieszkańców
-            police.Initialize(tab); // inicjalizacjia policji
-
-
-
-
+            _citizens.Initialize(); 
+            _police.Initialize();
         }
 
+
+        // LoadContent - ładuje tekstury w klasie Essentials
         public void LoadContent(ContentManager contentManager)
         {
-            Essentials.LoadContent(contentManager); // ladowanie tekstur z "content"
+            Essentials.LoadContent(contentManager);
         }
 
-        public void Update(GameTime gameTime) // wykonuje sie co klatke gry
+
+
+        // Update - głowna funkcja logiczna przetwarza wszytkie informacje i wywołuje Update wszystkich obiektów które potrzebują własnego przeliczenia.
+        public void Update(GameTime gameTime)
         {
             // zliczanie populacji
-            int populationRightNow = citizens.GetAgentCount() + police.GetAgentCount();
-            foreach (Gang gang in gangs)
+            int populationRightNow = _citizens.GetAgentCount() + _police.GetAgentCount();
+            foreach (Gang gang in _gangs)
             {
                 populationRightNow += gang.GetAgentCount();
             }
 
 
-            // jezeli jest włączone odradzanie mieszkańców i mieszkaniec nie żyje to dodaj brakującyhc mieszkańców
+            // jezeli Essentials.GroupSettings.CITIZEN_RESPAWN i populacja jest mniejsza niż początkowa dodaje do symulacji nowych obywateli
 
-            if (populationRightNow < startPopulation && Essentials.GroupSettings.CitizenSpawn)
+            if (populationRightNow < startPopulation && Essentials.GroupSettings.CITIZEN_RESPAWN)
             {
 
-                citizens.Update(gameTime, startPopulation - populationRightNow);
+                _citizens.Update(gameTime, startPopulation - populationRightNow);
             }
             else
             {
-                citizens.Update(gameTime, 0);
+                _citizens.Update(gameTime, 0);
             }
 
 
 
-            // aktualizuje decyzje policjantów
-            //policja reaguje na ataki
-            police.Update(gameTime);
+            _police.Update(gameTime);
 
-            //aktualizuje decyzje gangów
-            //gang wybiera lub kontynuuje atak
-            //woła agentów
-            //agenci gangu się ruszają
-            foreach (Gang gang in gangs)
+            foreach (Gang gang in  _gangs)
             {
                 gang.Update(gameTime);
             }
 
-
-            // aktualizacja mapy na końcu
-            tab.Update(gameTime);
+            _board.Update(gameTime);
         }
 
 
-
+        // Update - głowna funkcja graficzna, rozpoczyna rysowanie następnie wywołuje funkcje Draw na każdym obiekcie który ma swoją reprezentację graficzną.
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: cameraMatrix); // poprawne i ładne rysowanie
-            tab.Draw(spriteBatch);//mapa rysuje chodini budynki drzwi jako pierwosza warstwa
+            spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: cameraMatrix);
+            
+            // WARSTWA 1 - MAPA
+            _board.Draw(spriteBatch);
 
-            // rysowanie gangów zieloni/czerowni
-            foreach (Gang gang in gangs)
+            // WARSTWA 2 - OBYWATELE
+            _citizens.Draw(spriteBatch);
+
+            // WARSTWA 3 - GANGI
+            foreach (Gang gang in _gangs)
             {
                 gang.Draw(spriteBatch);
             }
 
-            citizens.Draw(spriteBatch); // rysowanie mieskzanców
-            police.Draw(spriteBatch); // rysowanie policji
-            spriteBatch.End(); // koniec rysowania
+            // WARSTWA 4 - POLICJANCI
+            _police.Draw(spriteBatch);
+
+            spriteBatch.End(); 
         }
     }
 

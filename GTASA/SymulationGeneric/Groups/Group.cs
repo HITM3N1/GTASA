@@ -7,8 +7,16 @@ using System.Collections.Generic;
 using System.Linq;
 namespace GTASA.SymulationGeneric.Groups
 {
-    public interface GroupAbstract // każda grupa musi mieć kolor, dodawanie agentów, usuwanie agentów, liczbe i ich prędkość
+
+    //**************************************************************************************//
+    //***** Interfejs : GroupAbstract                                                  *****//
+    //**************************************************************************************//
+    //***** Definiuję podstawowe wymogi dla  każdej grupy                              *****//
+    //**************************************************************************************//
+    public interface GroupAbstract 
     {
+        // każda grupa musi mieć kolor, dodawanie agentów, usuwanie agentów, liczbe i ich prędkość
+
         public GroupColor GetColor();
 
         public void RemoveAgent(Agent agent);
@@ -21,13 +29,53 @@ namespace GTASA.SymulationGeneric.Groups
     }
 
 
-    public class Group : GroupAbstract // klasa gropu która zawiera wszystkie wspólne rzeczey, beda dziedziczyć po niej police citizens i gang
+    //**************************************************************************************//
+    //***** Klasa : Group - dziedziczy po GroupAbstract                                *****//
+    //**************************************************************************************//
+    //***** Definiuję wspólną logikę dla wszystkich grup                               *****//
+    //**************************************************************************************//
+
+    public class Group : GroupAbstract
     {
+        //color - przechowuje kolor którym definiuje się grupa
         protected GroupColor color;
+
+        //agents - przechowuje listę agentów grupy
         protected List<Agent> agents;
+
+        //board - przechowuje tablice na której działa grupa
         protected Board board;
+
+        //speedModifier - przechowuje modyfikator szybkości grupy
         protected float speedModifier;
-        public GroupColor GetColor() { return color; }
+
+        protected Group(GroupColor color, Board board, float speedModifier)
+        {
+            agents = new List<Agent>();
+            this.color = color;
+            this.board = board;
+            this.speedModifier = speedModifier;
+        }
+
+
+        // Draw - wywołuje rysowanie wszystkich agentów grupy
+        public void Draw(SpriteBatch spriteBatch)
+        {
+            foreach (Agent agent in agents)
+            {
+                agent.Draw(spriteBatch);
+            }
+        }
+
+
+        //--------------------------------
+        //      GETTERY I SETTERY
+        //--------------------------------
+
+        public GroupColor GetColor() 
+        { 
+            return color; 
+        }
 
         public int GetAgentCount()
         {
@@ -49,62 +97,50 @@ namespace GTASA.SymulationGeneric.Groups
             agents.Add(agent);
         }
 
-        protected Group(GroupColor color, Board board, float speedModifier)
-        {
-            agents = new List<Agent>();
-            this.color = color;
-            this.board = board;
-            this.speedModifier = speedModifier;
-        }
-
-        public void Draw(SpriteBatch spriteBatch)
-        {
-            foreach (Agent agent in agents)
-            {
-                agent.Draw(spriteBatch);
-            }
-        }
-
         public List<Agent> GetAgents()
         {
             return agents;
         }
     }
 
-    public class Police : Group // grupa policji
+
+
+
+    //**************************************************************************************//
+    //***** Klasa : Police - dziedziczy po Group                                       *****//
+    //**************************************************************************************//
+    //***** Definiuję logikę grupy policja                                             *****//
+    //**************************************************************************************//
+
+    public class Police : Group 
     {
 
-        public Police(Board board) : base(Essentials.GroupSettings.PoliceColor, board, Essentials.GroupSettings.PoliceSpeedMod)// kontruktor policja wywoulje klase gropu
+        public Police(Board board) : base(Essentials.GroupSettings.POLICE_COLOR, board, Essentials.GroupSettings.POLICE_SPEED_MODIFIRE) { } // kontruktor policja wywoulje klase gropu
+
+
+        //Initialize - Inicjalizacja grupy i tworzenie agentów tej grupy.
+        public void Initialize() 
         {
-
-
-        }
-
-        public void Initialize(Board board) // tworzenie policjantoów
-        {
-            this.board = board;
-            for (int i = 0; i < Essentials.GroupSettings.PoliceStarMembers; i++)
+            for (int i = 0; i < Essentials.GroupSettings.POLICE_BASE_AGENT_COUNT; i++)
             {
-                agents.Add(new Agent(this, board, board.GetRandomPavment(), Essentials.AgentSettings.PoliceHP, Essentials.AgentSettings.PoliceStrength));
+                agents.Add(new Agent(this, board, board.GetRandomPavment()));
             }
         }
 
         public void Update(GameTime gameTime)
         {
-            System.Diagnostics.Debug.WriteLine("Police.Update wywołane");
             float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            List<Building> buildingsUnderAttack = board.GetAllBuildingsUnderAttack();// szukamy budynku pod atakiem aby zaeragowac i tam pojsc
-
+            // Szukamy budynku pod atakiem aby zaeragowac i tam pojsc
+            List<Building> buildingsUnderAttack = board.GetAllBuildingsUnderAttack();
+            
             if (buildingsUnderAttack.Count > 0)
             {
                 foreach (Building building in buildingsUnderAttack)
                 {
-                    building.CallAgents(Essentials.GroupSettings.PoliceRadiusReaction, this);
+                    building.CallAgents(Essentials.GroupSettings.POLICE_RADIUS_TO_REACTE, this);
                 }
             }
-
-
 
             foreach (Agent agent in agents)
             {
@@ -113,30 +149,37 @@ namespace GTASA.SymulationGeneric.Groups
         }
     }
 
+
+
+    //**************************************************************************************//
+    //***** Klasa : Police - dziedziczy po Group                                       *****//
+    //**************************************************************************************//
+    //***** Definiuję logikę grupy obywateli                                           *****//
+    //**************************************************************************************//
+
     public class Citizens : Group // grupa obywateli
     {
-        public Citizens(Board board) : base(Essentials.GroupSettings.CitizensColor, board, Essentials.GroupSettings.CitiznesSpeedMod)
+        public Citizens(Board board) : base(Essentials.GroupSettings.CITIZENS_COLOR, board, Essentials.GroupSettings.CITIZNES_SPEED_MODIFIRE) { }
+
+        //Initialize - Inicjalizacja grupy i tworzenie agentów tej grupy.
+
+        public void Initialize()
         {
-
-
-        }
-
-        public void Initialize(Board board)
-        {
-            this.board = board;
-            for (int i = 0; i < Essentials.GroupSettings.CitizensStarMembers; i++)
+            for (int i = 0; i < Essentials.GroupSettings.CITIZENS_BASE_AGENT_COUNT; i++)
             {
-                agents.Add(new Agent(this, board, board.GetRandomPavment(), Essentials.AgentSettings.CitizensHP, Essentials.AgentSettings.CitizensStrength));
+                agents.Add(new Agent(this, board, board.GetRandomPavment()));
             }
         }
 
         public void Update(GameTime gameTime, int count)
         {
-            if (count > 0)// dodawanie nowych mieszkańców po zabiciu
+
+            // dodawanie nowych mieszkańców po zabiciu
+            if (count > 0)
             {
                 for (int i = 0; i < count; i++)
                 {
-                    agents.Add(new Agent(this, board, board.GetRandomBorderPavment(), Essentials.AgentSettings.CitizensHP, Essentials.AgentSettings.CitizensStrength));
+                    agents.Add(new Agent(this, board, board.GetRandomBorderPavment()));
                 }
 
             }
@@ -145,7 +188,9 @@ namespace GTASA.SymulationGeneric.Groups
 
             float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            foreach (Agent agent in agents.ToList()) // usuwanie miszkanca jesli zmienil grupe
+
+            // Usuwanie miszkanca jesli zmienil grupe
+            foreach (Agent agent in agents.ToList()) 
             {
                 if (agent.GetGroup() != this)
                 {
@@ -160,30 +205,45 @@ namespace GTASA.SymulationGeneric.Groups
 
     }
 
+
+    //**************************************************************************************//
+    //***** Klasa : Police - dziedziczy po Group                                       *****//
+    //**************************************************************************************//
+    //***** Definiuję logikę Gangu                                                     *****//
+    //**************************************************************************************//
+
     public class Gang : Group // grupa gangu
     {
-        int gangID; // numer gangu
 
-        private Building groupBase;// baza gangu
+        // gangID - uniklany numer gangu
+        int gangID;
 
-        private Building test; // cel gangu
+        // groupBase - budynek będący bazą gangu
+        private Building groupBase;
 
-        private List<Building> gangBuildings; // lista budynkow nalezacyh do gangu
+        // target - budynek będący celem gangu
+        private Building target;
 
-        public Gang(int gangID, GroupColor color, Board board) : base(color, board, Essentials.GroupSettings.GangSpeedMod[gangID])
+        // gangBuildings - lista budynków należących do gangu
+        private List<Building> gangBuildings; 
+
+        public Gang(int gangID, GroupColor color, Board board) : base(color, board, Essentials.GroupSettings.GANG_SPEED_MODIFIRE[gangID])
         {
-            groupBase = board.GetFreeSpawnBuilding(this);
-            gangBuildings = board.GetGangBuildings(this);
-            test = board.GetRandomFreeBuilding(this);
-            test.StartAttack();
             this.gangID = gangID;
         }
 
+
+        //Initialize - Inicjalizacja grupy, szukanie miejsca na jej siedzibę oraz pierwszego celu, i tworzenie agentów tej grupy.
         public void Initialize()
         {
-            for (int i = 0; i < Essentials.GroupSettings.GangStarMembers[gangID]; i++)
+            groupBase = board.GetFreeSpawnBuilding(this);
+            gangBuildings = board.GetGangBuildings(this);
+            target = board.GetRandomFreeBuilding(this);
+            target.StartAttack();
+
+            for (int i = 0; i < Essentials.GroupSettings.GANGS_BASE_AGENT_COUNT[gangID]; i++)
             {
-                agents.Add(new Agent(this, board, groupBase, Essentials.AgentSettings.GangMemberHP, Essentials.AgentSettings.GangMemberStrength));
+                agents.Add(new Agent(this, board, groupBase));
             }
         }
 
@@ -199,23 +259,21 @@ namespace GTASA.SymulationGeneric.Groups
             {
                 foreach (Building building in buildingsUnderAttack)
                 {
-
-
-                    building.CallAgents(Essentials.GroupSettings.GangRadiusToDefenceBuilding, this);
+                    building.CallAgents(Essentials.GroupSettings.GANG_RADIUS_TO_DEFENCE_BUILIDNG, this);
                 }
             }
 
 
-            if (!test.IsAttackEnded() && !test.IsPoliceInside()) // kontynuowanie ataku
+            if (!target.IsAttackEnded() || !target.IsPoliceInside()) // kontynuowanie ataku
             {
-                test.CallAgents(Essentials.GroupSettings.GangRadiusToAttackBuilding, this);
+                target.CallAgents(Essentials.GroupSettings.GANG_RADIUS_TO_ATTACK_BUILIDNG, this);
             }
             else
             {
-                test = board.GetRandomFreeBuilding(this);
-                if (test.GetOccupation() != this)// w przeciwnym wypadu szukamy nopwego celu
+                target = board.GetRandomFreeBuilding(this);
+                if (target.GetOccupation() != this)// w przeciwnym wypadu szukamy nopwego celu
                 {
-                    test.StartAttack();
+                    target.StartAttack();
                 }
             }
 
@@ -227,9 +285,7 @@ namespace GTASA.SymulationGeneric.Groups
         }
 
 
-
-
-
+        //CheckIfGangBuildingAreUnderAttack - sprawdza czy któryś z budynków gangu jest attakowany.
         public List<Building> CheckIfGangBuildingAreUnderAttack(List<Building> gangBuildings)
         {
             List<Building> buildingsUnderAttack = new List<Building>();
@@ -240,7 +296,6 @@ namespace GTASA.SymulationGeneric.Groups
                 {
                     buildingsUnderAttack.Add(building);
                 }
-
             }
 
             return buildingsUnderAttack;

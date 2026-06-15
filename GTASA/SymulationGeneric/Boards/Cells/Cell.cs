@@ -5,11 +5,16 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace GTASA.SymulationGeneric.Boards.Cells
 {
+
+    //**************************************************************************************//
+    //***** Interfejs : Cell                                                           *****//
+    //**************************************************************************************//
+    //***** Definiuję podstawową działalność każdej komórki na mapie                   *****//
+    //**************************************************************************************//
+
     public interface Cell
     {
         public CellType GetCellType();
-
-        public Vector2 GetSpawnAbsolutePosition();
 
         public Vector2 GetAbsolutPosition();
 

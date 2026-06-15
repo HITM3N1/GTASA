@@ -5,6 +5,13 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace GTASA.SymulationGeneric.Boards.Cells
 {
+    //**************************************************************************************//
+    //***** Klasa : EmptyCell - dziedziczy po Cell                                     *****//
+    //**************************************************************************************//
+    //***** Jedna z trzech rodzajów komórek dostępnych w symulacji, jest to komórka    *****//
+    //***** podstawowa, jest ona całkowicie pusta logicznie                            *****//
+    //**************************************************************************************//
+
     public class EmptyCell : Cell
     {
         public CellType GetCellType()
@@ -12,29 +19,15 @@ namespace GTASA.SymulationGeneric.Boards.Cells
             return CellType.EmptyCell;
         }
 
-        public void Draw(SpriteBatch spriteBatch)
-        {
-
-        }
-
-        public Vector2 GetSpawnAbsolutePosition()
-        {
-            return Vector2.Zero;
-        }
+        public void Draw(SpriteBatch spriteBatch) { }
 
         public Vector2 GetAbsolutPosition()
         {
             return Vector2.Zero;
         }
 
-        public void AddAgent(Agent agent)
-        {
+        public void AddAgent(Agent agent) { }
 
-        }
-
-        public void RemoveAgent(Agent agent)
-        {
-
-        }
+        public void RemoveAgent(Agent agent) { }
     }
 }

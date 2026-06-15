@@ -8,68 +8,77 @@ using System.Linq;
 
 namespace GTASA.SymulationGeneric.Groups.Agents
 {
-    public class Agent//opisuje pojedyncza postac w grze
+    //**************************************************************************************//
+    //***** Klasa : Agent                                                              *****//
+    //**************************************************************************************//
+    //***** Odpowiada za wszystkich agentów poruszających się po planszy               *****//
+    //**************************************************************************************//
+
+    public class Agent
     {
-        // Group which Agent belongs to
+        // Grupa do której należy Agent
         GroupAbstract group;
 
-        //Board in which target is moving 
+        // Tablica po której Agent się porusza
         Board board;
 
-        //Cell in which Agent is right now
+        // Komórka w której Agent jest w tym momencie
         Cell cell;
 
-        //Absolut position of Agent
+        // Absolutna pozycja agenta w oknie
         Vector2 absolutPosition;
 
-        //Path to the target
+        // Kolejka kolejnych wektorów tworzących scieżkę do celu agenta
         Queue<Vector2> targetPath;
 
-        //Direction in which target is moving
+        // kierunek poruszanie się agenta
         int? direction;
 
-        //Speed of moving
+        // szybkość poruszania się agenta
         float speed;
 
-        //Check if agent is moving form one cell to another
+        // sprawdza czy agent jest w trakcie poruszania się między komórkami
         bool isMoving;
 
-        //Check if agent can get new target or is locked by interaction
+        // sprawdza czy agent jest aktualnie w stanie się swobodnie poruszać
         bool canBeMoved;
 
-        bool isBeingRecruted;//sprawdza czy agent jest recrutowany (mieszkaniec)
+        // sprawdza czy agent jest rekrutowany
+        bool isBeingRecruted;
 
+        // nowa grupa do której agent zostanie przypisany po rekrutacji
         GroupAbstract newOccupation;
 
+        // licznik od czasu rozpoczęcia rekrutacji
         float recrutationTimmer;
 
+        // liczni od czssu rozpoczecie przemieszczanie się o kratkę
         float moveTimer;
 
+        // startowa pozycja agenta przed ruchem
         Vector2 startPosition;
 
+        // pojedyńczy aktualny cel agenta
         Vector2 targetPosition;
 
-        int hp;
 
-        int strength;
-
-
-        public Agent(GroupAbstract group, Board board, Cell spawnCell, int hp, int strength)
+        // Konsturktor - ustawia wszystki potrzebne wartości
+        public Agent(GroupAbstract group, Board board, Cell spawnCell)
         {
             this.group = group;
             this.board = board;
             this.cell = spawnCell;
-            this.absolutPosition = spawnCell.GetSpawnAbsolutePosition();
+            this.absolutPosition = spawnCell is Building ? ((Building)spawnCell).GetSpawnAbsolutePosition() : spawnCell.GetAbsolutPosition();
             this.targetPath = new Queue<Vector2>();
             this.direction = null;
             
-            if(Essentials.GroupSettings.ranodmizeSpeed)
+            if(Essentials.GroupSettings.RANDOMIZE_SPEED_OF_EACH_AGNET)
             {
-                this.speed = ((Essentials.random.Next( (int)((0 - Essentials.speed) * 100), (int)((Essentials.speed) * 100)) / 200f + Essentials.speed) );
+                this.speed = ((Essentials.RANDOM.Next( (int)((0 - Essentials.GroupSettings.BASE_SPEED) * 100), (int)(Essentials.GroupSettings.BASE_SPEED * 100)) / 200f + Essentials.GroupSettings.BASE_SPEED) );
             }
             else
             {
-                this.speed = Essentials.speed;
+                this.speed = Essentials.GroupSettings.BASE_SPEED;
             }
             this.speed *= group.GetSpeedModifier();
             this.isMoving = false;
@@ -77,20 +86,16 @@ namespace GTASA.SymulationGeneric.Groups.Agents
             this.moveTimer = 0f;
             this.isBeingRecruted = false;
             this.recrutationTimmer = 0f;
-            this.hp = hp;
-            this.strength = strength;
-
-            spawnCell.AddAgent(this);
         }
 
-
+        // Update - funckja aktualizuje stan agenta i przemieszcza go odpowiednio do ustawionego celu.
         public void Update(GameTime gameTime)
         {
             float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
 
 
-            if (isBeingRecruted)//sprwadzamyu czy agent jest rekrutowany
+            if (isBeingRecruted)
             {
                 if (recrutationTimmer == 0f)
                 {
@@ -98,12 +103,12 @@ namespace GTASA.SymulationGeneric.Groups.Agents
 
                     if (group != newOccupation)
                     {
-                        newOccupation.AddAgent(this); // dodanie agenta do gangu
+                        newOccupation.AddAgent(this);
                     }
                 }
                 else
                 {
-                    if ((float)gameTime.TotalGameTime.TotalSeconds - recrutationTimmer > Essentials.GroupSettings.timeToRecrute)
+                    if ((float)gameTime.TotalGameTime.TotalSeconds - recrutationTimmer > Essentials.GroupSettings.TIME_TO_RECRUTE)
                     {
                         group = newOccupation;
                         UnlockAgent();
@@ -158,39 +163,58 @@ namespace GTASA.SymulationGeneric.Groups.Agents
                     }
                 }
             }
-
-
-
-
         }
 
+
+        // Draw - funkcja rysuje agenta z odpowiednia dla niego teksturą
+        public void Draw(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(Essentials.TEXTURES_BUILDING[(TextureType.A, group.GetColor())], absolutPosition, Color.White);
+        }
+
+
+        // GetGroup - zwraca grupę do której należy agent
         public GroupAbstract GetGroup()
         {
             return group;
         }
 
+        // CanBeMoved - sprawdza czy Agent może zostać ruszony 
+        public bool CanBeMoved()
+        {
+            return canBeMoved;
+        }
+
+
+        // SetTargetPath - ustawia sieżkę celów
         public void SetTargetPath(Queue<Vector2> targetPath)
         {
             this.targetPath = targetPath;
         }
 
+
+        // LockAgent - zamraża agenta na czas rekrutowania
         public void LockAgent(GroupAbstract occup)
         {
             newOccupation = occup;
             isBeingRecruted = true;
         }
 
+        // IsBeingRecruted - sprawdza czy agent jest rekrutowany
         public bool IsBeingRecruted()
         {
             return isBeingRecruted;
         }
 
+        // UnlockAgent - odblokowuje agenta po rekrutacji
         public void UnlockAgent()
         {
             isBeingRecruted = false;
             recrutationTimmer = 0f;
         }
 
+
+        // TryRecrute - poszukje celu do rekrutacji i próbuje go zrekrótować jeżeli cel znajduje się w odpowiednim dystansie
         public void TryRecrute(Pavment actuallCell)
         {
             if (group is Police || group is Citizens)
@@ -220,11 +244,11 @@ namespace GTASA.SymulationGeneric.Groups.Agents
 
             if (citizensNearby.Count > 0)
             {
-                int i = Essentials.random.Next(0, 100);
+                int i = Essentials.RANDOM.Next(0, 100);
 
-                if (i < Essentials.GroupSettings.RecrutationChance)
+                if (i < Essentials.GroupSettings.RECRUTATION_CHANCE)
                 {
-                    Agent recrute = citizensNearby[Essentials.random.Next(0, citizensNearby.Count)];
+                    Agent recrute = citizensNearby[Essentials.RANDOM.Next(0, citizensNearby.Count)];
 
                     recrute.LockAgent(group);
                     LockAgent(group);
@@ -232,6 +256,8 @@ namespace GTASA.SymulationGeneric.Groups.Agents
             }
         }
 
+        
+        // Wander - gdy agent nie posiada celu podróży funkcja ta odpowiada za jego losowe poruszanie się 
         public void Wander()
         {
             if (cell.GetCellType() == CellType.Pavment)
@@ -265,7 +291,7 @@ namespace GTASA.SymulationGeneric.Groups.Agents
 
                     if (actuallCell.pavmentsNearby.Count() == 4)
                     {
-                        int i = Essentials.random.Next(1, 6);
+                        int i = Essentials.RANDOM.Next(1, 6);
 
                         if (i == 1)
                         {
@@ -305,8 +331,8 @@ namespace GTASA.SymulationGeneric.Groups.Agents
                 }
                 else
                 {
-                    int x = (Essentials.random.Next(0, 2) == 0 ? 2 : -2) * Essentials.random.Next(0, 2);
-                    int y = x == 0 ? (Essentials.random.Next(0, 2) == 0 ? 2 : -2) : 0;
+                    int x = (Essentials.RANDOM.Next(0, 2) == 0 ? 2 : -2) * Essentials.RANDOM.Next(0, 2);
+                    int y = x == 0 ? (Essentials.RANDOM.Next(0, 2) == 0 ? 2 : -2) : 0;
 
                     Vector2 target = Vector2.Clamp(new Vector2(x + absolutPosition.X, y + absolutPosition.Y), new Vector2(building.bounds.X * 16, building.bounds.Y * 16), new Vector2((building.bounds.Width - 1) * 16, (building.bounds.Height - 1) * 16));
 
@@ -314,22 +340,6 @@ namespace GTASA.SymulationGeneric.Groups.Agents
                 }
 
             }
-        }
-
-        public bool CanBeMoved()
-        {
-            return canBeMoved;
-        }
-
-
-        public Vector2 GetPosition()
-        {
-            return absolutPosition;
-        }
-
-        public void Draw(SpriteBatch spriteBatch)
-        {
-            spriteBatch.Draw(Essentials.texturesBuilding[(TextureType.A, group.GetColor())], absolutPosition, Color.White);
         }
     }
 }

@@ -7,246 +7,270 @@ using System.Collections.Generic;
 
 namespace GTASA.SymulationGeneric
 {
-    public static class Essentials // classa z ustawieniami globalnymi (panel konifguracyjny całej gry)
+    //******************************************************************//
+    //***** Klasa : Essentials                                     *****//
+    //******************************************************************//
+    //***** Ustawienie i Parametry całej gry.                      *****//
+    //******************************************************************//
+
+    public static class Essentials
     {
-        private static int seed = 0;
-        public static Random random = new Random(seed);
 
+        // SEED - parametr kontrouljący losowość całej gry.
+        private readonly static int SEED = 0;
 
-        public static int mapSize = 15;
-        public static int pavmentCount = 2;
-        public static int pavmentOffset = 3;
-        public static int cellSize = 16;
-        public static int gangsCount = 2;
+        // RANDOM - obiekt tworzący wszystkie liczby losowe w grze.
+        public readonly static Random RANDOM = new Random(SEED);
 
+        // MAP_SIZE - rozmiar mapy gry  
+        public readonly static int MAP_SIZE = 15;
 
-        public static int gangsCount = 2; // liczb gangów
+        // PAVMENT_COUNT - ilość chodników horyzontalnych i wertykalnych.
+        public readonly static int PAVMENT_COUNT = 2;
 
+        // PAVMENT_OFFSET - minimalny odstęp między chodnikami
+        public readonly static int PAVMENT_OFFSET = 3;
 
+        // CELL_SIZE - rozmiar każdej kratki w pikselach
+        public readonly static int CELL_SIZE = 16;
 
-        public static float speed = 0.2f; // bazowa prędkosc agentów
-        public static bool NEW_RENDER = true;
-        public static float RENDER_ZOOM = 3f;
+        // RENDER_ZOOM - całkowity zoom powiększa lub pomniejsza okno
+        public readonly static float RENDER_ZOOM = 3f;
 
 
         public static class GroupSettings
         {
-            public static int PoliceStarMembers = 0;
-            public static int CitizensStarMembers = 0;
-            public static int[] GangStarMembers = { 0, 0 };
-            public static GroupColor[] GangColors = { GroupColor.Red, GroupColor.Green };
+            // GANGS_COUNT - ilość ganów na mapie (z racji na ilość tekstur przyjmuje wartość od 0-2)
+            public readonly static int GANGS_COUNT = 2;
 
-            public static bool CitizenSpawn = true;
+            // _BASE_AGENT_COUNT - kolejno ilość policjantów, cywili, i przestępców w ganach w momencie startu symulacji
+            public readonly static int POLICE_BASE_AGENT_COUNT = 0;
+            public readonly static int CITIZENS_BASE_AGENT_COUNT = 5;
+            public readonly static int[] GANGS_BASE_AGENT_COUNT = { 1, 2 };
 
-            public static float timeToOccupyBuilding = 5;
-            public static bool canRecrute = true;
+            // _COLOR - kolejno kolor policji, obywateli i gangów
+            public readonly static GroupColor POLICE_COLOR = GroupColor.Blue;
+            public readonly static GroupColor CITIZENS_COLOR = GroupColor.White;
+            public readonly static GroupColor[] GANGS_COLOR = { GroupColor.Red, GroupColor.Green };
 
-            public static float timeToRecrute = 3;
+            // CITIZEN_RESPAWN - odpowiada za fakt czy obywatele pojawiają się utrzymując cały czas ten sam poziom populacji
+            public readonly static bool CITIZEN_RESPAWN = true;
 
-            public static GroupColor PoliceColor = GroupColor.Blue;
-            public static GroupColor CitizensColor = GroupColor.White;
+            // TIME_TO_TAKE_OVER_BUILDING - czas w sekundach potrzebny na przejęcie budynku przez gang
+            public readonly static float TIME_TO_TAKE_OVER_BUILDING = 5;
 
 
-            public static int GangRadiusToDefenceBuilding = 10;
-            public static int GangRadiusToAttackBuilding = 5;
-            public static int PoliceRadiusReaction = 20;
+            // CAN_GANGS_RECRUTE - odpowida za fakt czy gangi są w stanie rekrutować obywateli
+            public readonly static bool CAN_GANGS_RECRUTE = true;
 
-            public static int RecrutationChance = 5;
+            // RECRUTATION_CHANCE - szansa w % na to że w każdej klatce przestępca zrekrutuje obywatela obok
+            public readonly static int RECRUTATION_CHANCE = 5;
 
-            public static float PoliceSpeedMod = 2f;
-            public static float CitiznesSpeedMod = 1.1f;
-            public static float[] GangSpeedMod = { 1, 1 };
+            // TIME_TO_RECRUTE - czas w sekundach potrzebny na zrekrutowanie obywatela
+            public readonly static float TIME_TO_RECRUTE = 3;
 
-            public static bool ranodmizeSpeed = false;
+
+            // GANG_RADIUS_TO_DEFENCE_BUILIDNG - zasięg w jakim przestępcy reagują na attakowany przez inną grupę ich budynek
+            public readonly static int GANG_RADIUS_TO_DEFENCE_BUILIDNG = 10;
+
+            // GANG_RADIUS_TO_ATTACK_BUILIDNG - zasięg w jakim przestępcy reagują na attakowany przez grupę budynek
+            public readonly static int GANG_RADIUS_TO_ATTACK_BUILIDNG = 5;
+
+            // POLICE_RADIUS_TO_REACTE - zasięg w jakim policja reaguje na dowolny przejmowany budynek 
+            public readonly static int POLICE_RADIUS_TO_REACTE = 20;
+
+            // BASE_SPEED - podstawowa wartość prędkości każdego z agentów podawana w kratkach na tick
+            public readonly static float BASE_SPEED = 0.2f;
+
+            // _SPEED_MODIFIRE - kolejno modyfikatory prędkości dla policji, cywili i ganów. Nim wartośc modyfikatora większa tym bardziej spowolniona jest dana grupa. Wartość 1 jest domyślna i nie zmienia prędkości grupy
+            public readonly static float POLICE_SPEED_MODIFIRE = 2f;
+            public readonly static float CITIZNES_SPEED_MODIFIRE = 1.1f;
+            public readonly static float[] GANG_SPEED_MODIFIRE = { 1, 1 };
+
+            // RANDOMIZE_SPEED_OF_EACH_AGNET - Losowe zmienniane prędkości każdego agenta z osobna.
+            public readonly static bool RANDOMIZE_SPEED_OF_EACH_AGNET = false;
         }
 
         public static class GroupSettings1
         {
-            public static int PoliceStarMembers = 0;
-            public static int CitizensStarMembers = 0;
-            public static int[] GangStarMembers = { 2, 3 };
-            public static GroupColor[] GangColors = { GroupColor.Red, GroupColor.Green };
+            public readonly static int PoliceStarMembers = 0;
+            public readonly static int CitizensStarMembers = 0;
+            public readonly static int[] GangStarMembers = { 2, 3 };
+            public readonly static GroupColor[] GangColors = { GroupColor.Red, GroupColor.Green };
 
-            public static bool CitizenSpawn = false;
+            public readonly static bool CitizenSpawn = false;
 
-            public static float timeToOccupyBuilding = 5;
-            public static bool canRecrute = true;
+            public readonly static float timeToOccupyBuilding = 5;
+            public readonly static bool canRecrute = true;
 
-            public static float timeToRecrute = 3;
+            public readonly static float timeToRecrute = 3;
 
-            public static GroupColor PoliceColor = GroupColor.Blue;
-            public static GroupColor CitizensColor = GroupColor.White;
+            public readonly static GroupColor PoliceColor = GroupColor.Blue;
+            public readonly static GroupColor CitizensColor = GroupColor.White;
 
 
-            public static int GangRadiusToDefenceBuilding = 10;
-            public static int GangRadiusToAttackBuilding = 5;
-            public static int PoliceRadiusReaction = 20;
+            public readonly static int GangRadiusToDefenceBuilding = 10;
+            public readonly static int GangRadiusToAttackBuilding = 5;
+            public readonly static int PoliceRadiusReaction = 20;
 
-            public static int RecrutationChance = 5;
+            public readonly static int RecrutationChance = 5;
 
-            public static float PoliceSpeedMod = 2f;
-            public static float CitiznesSpeedMod = 0.8f;
-            public static float[] GangSpeedMod = { 1, 1 };
+            public readonly static float PoliceSpeedMod = 2f;
+            public readonly static float CitiznesSpeedMod = 0.8f;
+            public readonly static float[] GangSpeedMod = { 1, 1 };
 
-            public static bool ranodmizeSpeed = true;
+            public readonly static bool ranodmizeSpeed = true;
         }
 
         public static class GroupSettings2
         {
-            public static int PoliceStarMembers = 1;
-            public static int CitizensStarMembers = 1;
-            public static int[] GangStarMembers = { 2, 3 };
-            public static GroupColor[] GangColors = { GroupColor.Red, GroupColor.Green };
+            public readonly static int PoliceStarMembers = 1;
+            public readonly static int CitizensStarMembers = 1;
+            public readonly static int[] GangStarMembers = { 2, 3 };
+            public readonly static GroupColor[] GangColors = { GroupColor.Red, GroupColor.Green };
 
-            public static bool CitizenSpawn = true;
+            public readonly static bool CitizenSpawn = true;
 
-            public static float timeToOccupyBuilding = 5;
-            public static bool canRecrute = true;
+            public readonly static float timeToOccupyBuilding = 5;
+            public readonly static bool canRecrute = true;
 
-            public static float timeToRecrute = 3;
+            public readonly static float timeToRecrute = 3;
 
-            public static GroupColor PoliceColor = GroupColor.Blue;
-            public static GroupColor CitizensColor = GroupColor.White;
+            public readonly static GroupColor PoliceColor = GroupColor.Blue;
+            public readonly static GroupColor CitizensColor = GroupColor.White;
 
 
-            public static int GangRadiusToDefenceBuilding = 10;
-            public static int GangRadiusToAttackBuilding = 5;
-            public static int PoliceRadiusReaction = 20;
+            public readonly static int GangRadiusToDefenceBuilding = 10;
+            public readonly static int GangRadiusToAttackBuilding = 5;
+            public readonly static int PoliceRadiusReaction = 20;
 
-            public static int RecrutationChance = 5;
+            public readonly static int RecrutationChance = 5;
 
-            public static float PoliceSpeedMod = 2f;
-            public static float CitiznesSpeedMod = 1.1f;
-            public static float[] GangSpeedMod = { 1, 1 };
+            public readonly static float PoliceSpeedMod = 2f;
+            public readonly static float CitiznesSpeedMod = 1.1f;
+            public readonly static float[] GangSpeedMod = { 1, 1 };
 
-            public static bool ranodmizeSpeed = false;
+            public readonly static bool ranodmizeSpeed = false;
         }
 
         public static class GroupSettings4
         {
-            public static int PoliceStarMembers = 0;
-            public static int CitizensStarMembers = 0;
-            public static int[] GangStarMembers = { 2, 3 };
-            public static GroupColor[] GangColors = { GroupColor.Red, GroupColor.Green };
+            public readonly static int PoliceStarMembers = 0;
+            public readonly static int CitizensStarMembers = 0;
+            public readonly static int[] GangStarMembers = { 2, 3 };
+            public readonly static GroupColor[] GangColors = { GroupColor.Red, GroupColor.Green };
 
-            public static bool CitizenSpawn = false; //respawn mieszkańców po smierći
+            public readonly static bool CitizenSpawn = false; //respawn mieszkańców po smierći
 
-            public static float timeToOccupyBuilding = 5; // czas w jakim gangi przejmują budynki
-            public static bool canRecrute = true; // czy gangi mogą rekrutować mieszkanców
+            public readonly static float timeToOccupyBuilding = 5; // czas w jakim gangi przejmują budynki
+            public readonly static bool canRecrute = true; // czy gangi mogą rekrutować mieszkanców
 
-            public static float timeToRecrute = 3; // czas rekrutowania
+            public readonly static float timeToRecrute = 3; // czas rekrutowania
 
-            public static GroupColor PoliceColor = GroupColor.Blue;
-            public static GroupColor CitizensColor = GroupColor.White;
+            public readonly static GroupColor PoliceColor = GroupColor.Blue;
+            public readonly static GroupColor CitizensColor = GroupColor.White;
 
 
-            public static int GangRadiusToDefenceBuilding = 10;
-            public static int GangRadiusToAttackBuilding = 5;
-            public static int PoliceRadiusReaction = 20;
+            public readonly static int GangRadiusToDefenceBuilding = 10;
+            public readonly static int GangRadiusToAttackBuilding = 5;
+            public readonly static int PoliceRadiusReaction = 20;
 
-            public static int RecrutationChance = 5;
+            public readonly static int RecrutationChance = 5;
 
-            public static float PoliceSpeedMod = 2f;
-            public static float CitiznesSpeedMod = 0.8f;
-            public static float[] GangSpeedMod = { 1, 1 };
+            public readonly static float PoliceSpeedMod = 2f;
+            public readonly static float CitiznesSpeedMod = 0.8f;
+            public readonly static float[] GangSpeedMod = { 1, 1 };
 
-            public static bool ranodmizeSpeed = true;
+            public readonly static bool ranodmizeSpeed = true;
         }
 
+        // TEXTURES_PAVMENT - przechowuje typ tekstury i odpowiadającą mu rzeczywistą teksturę chodnika
+        public static Dictionary<TextureType, Texture2D> TEXTURES_PAVMENT = new Dictionary<TextureType, Texture2D>();
+
+        // TEXTURES_BUILDING - przechowuje typ tekstury oraz kolor i odpowiadającą mu rzeczywistą teksturę budynku
+        public static Dictionary<(TextureType, GroupColor), Texture2D> TEXTURES_BUILDING = new Dictionary<(TextureType, GroupColor), Texture2D>();
+
+        // DIRECTIONS - przechowuje kierunek przemieszczanie się
+        public static Dictionary<int, Vector2> DIRECTIONS = new Dictionary<int, Vector2>();
 
 
-        public static class AgentSettings
-        {
-            public static int GangMemberHP = 100;
-            public static int GangMemberStrength = 10;
-            public static int StenghtForKill = 5;
-
-            public static int PoliceHP = 10000;
-            public static int PoliceStrength = 10000;
-
-            public static int CitizensHP = 1;
-            public static int CitizensStrength = 0;
-
-            public static int Regeneration = 1;
-        }
-
-
-
-        public static Dictionary<TextureType, Texture2D> texturesPavment = new Dictionary<TextureType, Texture2D>();
-
-        public static Dictionary<(TextureType, GroupColor), Texture2D> texturesBuilding = new Dictionary<(TextureType, GroupColor), Texture2D>();
-
-        public static Dictionary<int, Vector2> direction = new Dictionary<int, Vector2>();
-
-
+        //******************************************************************//
+        //***** void Initialize() - inicjalizuje wartości klasy        *****//
+        //******************************************************************//
         public static void Initialize() // kierunku ruchu
         {
-            direction[0] = new Vector2(-1, 0); //lewo
-            direction[1] = new Vector2(0, -1); // góra
-            direction[2] = new Vector2(1, 0); // prawo
-            direction[3] = new Vector2(0, 1); // dół
+            DIRECTIONS[0] = new Vector2(-1, 0); //lewo
+            DIRECTIONS[1] = new Vector2(0, -1); // góra
+            DIRECTIONS[2] = new Vector2(1, 0); // prawo
+            DIRECTIONS[3] = new Vector2(0, 1); // dół
         }
 
+
+        //******************************************************************************//
+        //***** void LoadContent() - ładuje tekstury do odpowiednich obiektów      *****//
+        //******************************************************************************//
         public static void LoadContent(ContentManager contentManager)
         {
 
-            texturesBuilding.Add((TextureType.B1, GroupColor.White), contentManager.Load<Texture2D>("B1-White"));
-            texturesBuilding.Add((TextureType.B2, GroupColor.White), contentManager.Load<Texture2D>("B2-White"));
-            texturesBuilding.Add((TextureType.B3, GroupColor.White), contentManager.Load<Texture2D>("B3-White"));
-            texturesBuilding.Add((TextureType.B4, GroupColor.White), contentManager.Load<Texture2D>("B4-White"));
-            texturesBuilding.Add((TextureType.B5, GroupColor.White), contentManager.Load<Texture2D>("B5-White"));
-            texturesBuilding.Add((TextureType.B6, GroupColor.White), contentManager.Load<Texture2D>("B6-White"));
-            texturesBuilding.Add((TextureType.B7, GroupColor.White), contentManager.Load<Texture2D>("B7-White"));
-            texturesBuilding.Add((TextureType.B8, GroupColor.White), contentManager.Load<Texture2D>("B8-White"));
-            texturesBuilding.Add((TextureType.B0, GroupColor.White), contentManager.Load<Texture2D>("B9-White"));
+            TEXTURES_BUILDING.Add((TextureType.B1, GroupColor.White), contentManager.Load<Texture2D>("B1-White"));
+            TEXTURES_BUILDING.Add((TextureType.B2, GroupColor.White), contentManager.Load<Texture2D>("B2-White"));
+            TEXTURES_BUILDING.Add((TextureType.B3, GroupColor.White), contentManager.Load<Texture2D>("B3-White"));
+            TEXTURES_BUILDING.Add((TextureType.B4, GroupColor.White), contentManager.Load<Texture2D>("B4-White"));
+            TEXTURES_BUILDING.Add((TextureType.B5, GroupColor.White), contentManager.Load<Texture2D>("B5-White"));
+            TEXTURES_BUILDING.Add((TextureType.B6, GroupColor.White), contentManager.Load<Texture2D>("B6-White"));
+            TEXTURES_BUILDING.Add((TextureType.B7, GroupColor.White), contentManager.Load<Texture2D>("B7-White"));
+            TEXTURES_BUILDING.Add((TextureType.B8, GroupColor.White), contentManager.Load<Texture2D>("B8-White"));
+            TEXTURES_BUILDING.Add((TextureType.B0, GroupColor.White), contentManager.Load<Texture2D>("B9-White"));
 
-            texturesBuilding.Add((TextureType.B1, GroupColor.Blue), contentManager.Load<Texture2D>("B1-White"));
-            texturesBuilding.Add((TextureType.B2, GroupColor.Blue), contentManager.Load<Texture2D>("B2-White"));
-            texturesBuilding.Add((TextureType.B3, GroupColor.Blue), contentManager.Load<Texture2D>("B3-White"));
-            texturesBuilding.Add((TextureType.B4, GroupColor.Blue), contentManager.Load<Texture2D>("B4-White"));
-            texturesBuilding.Add((TextureType.B5, GroupColor.Blue), contentManager.Load<Texture2D>("B5-White"));
-            texturesBuilding.Add((TextureType.B6, GroupColor.Blue), contentManager.Load<Texture2D>("B6-White"));
-            texturesBuilding.Add((TextureType.B7, GroupColor.Blue), contentManager.Load<Texture2D>("B7-White"));
-            texturesBuilding.Add((TextureType.B8, GroupColor.Blue), contentManager.Load<Texture2D>("B8-White"));
-            texturesBuilding.Add((TextureType.B0, GroupColor.Blue), contentManager.Load<Texture2D>("B9-White"));
+            TEXTURES_BUILDING.Add((TextureType.B1, GroupColor.Blue), contentManager.Load<Texture2D>("B1-White"));
+            TEXTURES_BUILDING.Add((TextureType.B2, GroupColor.Blue), contentManager.Load<Texture2D>("B2-White"));
+            TEXTURES_BUILDING.Add((TextureType.B3, GroupColor.Blue), contentManager.Load<Texture2D>("B3-White"));
+            TEXTURES_BUILDING.Add((TextureType.B4, GroupColor.Blue), contentManager.Load<Texture2D>("B4-White"));
+            TEXTURES_BUILDING.Add((TextureType.B5, GroupColor.Blue), contentManager.Load<Texture2D>("B5-White"));
+            TEXTURES_BUILDING.Add((TextureType.B6, GroupColor.Blue), contentManager.Load<Texture2D>("B6-White"));
+            TEXTURES_BUILDING.Add((TextureType.B7, GroupColor.Blue), contentManager.Load<Texture2D>("B7-White"));
+            TEXTURES_BUILDING.Add((TextureType.B8, GroupColor.Blue), contentManager.Load<Texture2D>("B8-White"));
+            TEXTURES_BUILDING.Add((TextureType.B0, GroupColor.Blue), contentManager.Load<Texture2D>("B9-White"));
 
-            texturesBuilding.Add((TextureType.B1, GroupColor.Green), contentManager.Load<Texture2D>("B1-Green"));
-            texturesBuilding.Add((TextureType.B2, GroupColor.Green), contentManager.Load<Texture2D>("B2-Green"));
-            texturesBuilding.Add((TextureType.B3, GroupColor.Green), contentManager.Load<Texture2D>("B3-Green"));
-            texturesBuilding.Add((TextureType.B4, GroupColor.Green), contentManager.Load<Texture2D>("B4-Green"));
-            texturesBuilding.Add((TextureType.B5, GroupColor.Green), contentManager.Load<Texture2D>("B5-Green"));
-            texturesBuilding.Add((TextureType.B6, GroupColor.Green), contentManager.Load<Texture2D>("B6-Green"));
-            texturesBuilding.Add((TextureType.B7, GroupColor.Green), contentManager.Load<Texture2D>("B7-Green"));
-            texturesBuilding.Add((TextureType.B8, GroupColor.Green), contentManager.Load<Texture2D>("B8-Green"));
-            texturesBuilding.Add((TextureType.B0, GroupColor.Green), contentManager.Load<Texture2D>("B0-Green"));
+            TEXTURES_BUILDING.Add((TextureType.B1, GroupColor.Green), contentManager.Load<Texture2D>("B1-Green"));
+            TEXTURES_BUILDING.Add((TextureType.B2, GroupColor.Green), contentManager.Load<Texture2D>("B2-Green"));
+            TEXTURES_BUILDING.Add((TextureType.B3, GroupColor.Green), contentManager.Load<Texture2D>("B3-Green"));
+            TEXTURES_BUILDING.Add((TextureType.B4, GroupColor.Green), contentManager.Load<Texture2D>("B4-Green"));
+            TEXTURES_BUILDING.Add((TextureType.B5, GroupColor.Green), contentManager.Load<Texture2D>("B5-Green"));
+            TEXTURES_BUILDING.Add((TextureType.B6, GroupColor.Green), contentManager.Load<Texture2D>("B6-Green"));
+            TEXTURES_BUILDING.Add((TextureType.B7, GroupColor.Green), contentManager.Load<Texture2D>("B7-Green"));
+            TEXTURES_BUILDING.Add((TextureType.B8, GroupColor.Green), contentManager.Load<Texture2D>("B8-Green"));
+            TEXTURES_BUILDING.Add((TextureType.B0, GroupColor.Green), contentManager.Load<Texture2D>("B0-Green"));
 
-            texturesBuilding.Add((TextureType.B1, GroupColor.Red), contentManager.Load<Texture2D>("B1-Red"));
-            texturesBuilding.Add((TextureType.B2, GroupColor.Red), contentManager.Load<Texture2D>("B2-Red"));
-            texturesBuilding.Add((TextureType.B3, GroupColor.Red), contentManager.Load<Texture2D>("B3-Red"));
-            texturesBuilding.Add((TextureType.B4, GroupColor.Red), contentManager.Load<Texture2D>("B4-Red"));
-            texturesBuilding.Add((TextureType.B5, GroupColor.Red), contentManager.Load<Texture2D>("B5-Red"));
-            texturesBuilding.Add((TextureType.B6, GroupColor.Red), contentManager.Load<Texture2D>("B6-Red"));
-            texturesBuilding.Add((TextureType.B7, GroupColor.Red), contentManager.Load<Texture2D>("B7-Red"));
-            texturesBuilding.Add((TextureType.B8, GroupColor.Red), contentManager.Load<Texture2D>("B8-Red"));
-            texturesBuilding.Add((TextureType.B0, GroupColor.Red), contentManager.Load<Texture2D>("B0-Red"));
+            TEXTURES_BUILDING.Add((TextureType.B1, GroupColor.Red), contentManager.Load<Texture2D>("B1-Red"));
+            TEXTURES_BUILDING.Add((TextureType.B2, GroupColor.Red), contentManager.Load<Texture2D>("B2-Red"));
+            TEXTURES_BUILDING.Add((TextureType.B3, GroupColor.Red), contentManager.Load<Texture2D>("B3-Red"));
+            TEXTURES_BUILDING.Add((TextureType.B4, GroupColor.Red), contentManager.Load<Texture2D>("B4-Red"));
+            TEXTURES_BUILDING.Add((TextureType.B5, GroupColor.Red), contentManager.Load<Texture2D>("B5-Red"));
+            TEXTURES_BUILDING.Add((TextureType.B6, GroupColor.Red), contentManager.Load<Texture2D>("B6-Red"));
+            TEXTURES_BUILDING.Add((TextureType.B7, GroupColor.Red), contentManager.Load<Texture2D>("B7-Red"));
+            TEXTURES_BUILDING.Add((TextureType.B8, GroupColor.Red), contentManager.Load<Texture2D>("B8-Red"));
+            TEXTURES_BUILDING.Add((TextureType.B0, GroupColor.Red), contentManager.Load<Texture2D>("B0-Red"));
 
-            texturesBuilding.Add((TextureType.D, GroupColor.White), contentManager.Load<Texture2D>("DoorWhite"));
-            texturesBuilding.Add((TextureType.D, GroupColor.Blue), contentManager.Load<Texture2D>("DoorWhite"));
-            texturesBuilding.Add((TextureType.D, GroupColor.Red), contentManager.Load<Texture2D>("DoorRed"));
-            texturesBuilding.Add((TextureType.D, GroupColor.Green), contentManager.Load<Texture2D>("DoorGreen"));
+            TEXTURES_BUILDING.Add((TextureType.D, GroupColor.White), contentManager.Load<Texture2D>("DoorWhite"));
+            TEXTURES_BUILDING.Add((TextureType.D, GroupColor.Blue), contentManager.Load<Texture2D>("DoorWhite"));
+            TEXTURES_BUILDING.Add((TextureType.D, GroupColor.Red), contentManager.Load<Texture2D>("DoorRed"));
+            TEXTURES_BUILDING.Add((TextureType.D, GroupColor.Green), contentManager.Load<Texture2D>("DoorGreen"));
 
-            texturesBuilding.Add((TextureType.A, GroupColor.White), contentManager.Load<Texture2D>("Agent-White"));
-            texturesBuilding.Add((TextureType.A, GroupColor.Red), contentManager.Load<Texture2D>("Agent-Red"));
-            texturesBuilding.Add((TextureType.A, GroupColor.Green), contentManager.Load<Texture2D>("Agent-Green"));
-            texturesBuilding.Add((TextureType.A, GroupColor.Blue), contentManager.Load<Texture2D>("Agent-Blue"));
+            TEXTURES_BUILDING.Add((TextureType.A, GroupColor.White), contentManager.Load<Texture2D>("Agent-White"));
+            TEXTURES_BUILDING.Add((TextureType.A, GroupColor.Red), contentManager.Load<Texture2D>("Agent-Red"));
+            TEXTURES_BUILDING.Add((TextureType.A, GroupColor.Green), contentManager.Load<Texture2D>("Agent-Green"));
+            TEXTURES_BUILDING.Add((TextureType.A, GroupColor.Blue), contentManager.Load<Texture2D>("Agent-Blue"));
 
-            texturesPavment.Add(TextureType.P0, contentManager.Load<Texture2D>("P0"));
-            texturesPavment.Add(TextureType.P1, contentManager.Load<Texture2D>("P1"));
-            texturesPavment.Add(TextureType.P2, contentManager.Load<Texture2D>("P2"));
-            texturesPavment.Add(TextureType.P3, contentManager.Load<Texture2D>("P3"));
+            TEXTURES_PAVMENT.Add(TextureType.P0, contentManager.Load<Texture2D>("P0"));
+            TEXTURES_PAVMENT.Add(TextureType.P1, contentManager.Load<Texture2D>("P1"));
+            TEXTURES_PAVMENT.Add(TextureType.P2, contentManager.Load<Texture2D>("P2"));
+            TEXTURES_PAVMENT.Add(TextureType.P3, contentManager.Load<Texture2D>("P3"));
         }
     }
 
+
+    // CellType - przechowuje informacje o czysto logicznym stanie każdej komórki 
     public enum CellType
     {
         EmptyCell,
@@ -254,31 +278,30 @@ namespace GTASA.SymulationGeneric
         Building,
     }
 
+
+    // TextureType - przechowuje informacje o teksturze każdej komórki
     public enum TextureType
     {
-        P0, P1, P2, P3,
+        // Różne tekstury chodników
+        P0, P1, P2, P3, 
 
-        B0, B1, B2, B3, B4, B5, B6, B7, B8,
+        //Różne tekstury budynków
+        B0, B1, B2, B3, B4, B5, B6, B7, B8, 
 
-        D,
+        // Tekstura drzwi
+        D, 
 
-        A,
+        // Tekstura Agenta
+        A, 
     }
 
-    public enum TextureRotation
-    {
-        deg0,
-        deg90,
-        deg180,
-        deg270,
-    }
+    // GroupColor - przechowuje kolor konkretnej grupy
 
     public enum GroupColor
     {
         White,
         Red,
         Green,
-        Purple,
         Blue,
     }
 }

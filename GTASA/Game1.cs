@@ -1,14 +1,14 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics; // przeznaczone głownie na windows
+using Microsoft.Xna.Framework.Graphics; 
 using GTASA.SymulationGeneric;
 
-namespace GTASA // głowna klasa Monogame zarządzajaca oknem rysowaniem i pętlą (game1.cs)
+namespace GTASA 
 {
-    public class Game1 : Game
+    public class Game1 : Game 
     {
         private GraphicsDeviceManager _graphics; //ustawia okno gry
         private SpriteBatch _spriteBatch; //słuzy do rysowania tekstur
-        private Symulation symulation; // przewowuje cała logikę gry
+        private Symulation symulation; // przechowuje cała logikę gry
 
         public Game1()   // Game1 nie zna szczegółów mapy, gangów ani agentów, on tylko aktulaizuje i rysuje
         {
@@ -17,8 +17,8 @@ namespace GTASA // głowna klasa Monogame zarządzajaca oknem rysowaniem i pętl
             IsMouseVisible = true; // widocznosc myszki w grze wł/wył
 
             _graphics.IsFullScreen = false; // full scren wł/wył
-            _graphics.PreferredBackBufferWidth = Essentials.mapSize * Essentials.cellSize * (int)Essentials.RENDER_ZOOM; // rozmiar mapy x rozmiar kafelka x zoom - szerokosc
-            _graphics.PreferredBackBufferHeight = Essentials.mapSize * Essentials.cellSize * (int)Essentials.RENDER_ZOOM;  //// rozmiar mapy x rozmiar kafelka x zoom - wysokosć
+            _graphics.PreferredBackBufferWidth = Essentials.MAP_SIZE * Essentials.MAP_SIZE * (int)Essentials.RENDER_ZOOM; // rozmiar mapy x rozmiar kafelka x zoom - szerokosc
+            _graphics.PreferredBackBufferHeight = Essentials.MAP_SIZE * Essentials.MAP_SIZE * (int)Essentials.RENDER_ZOOM;  //// rozmiar mapy x rozmiar kafelka x zoom - wysokosć
             _graphics.ApplyChanges();
         }
 
@@ -37,7 +37,7 @@ namespace GTASA // głowna klasa Monogame zarządzajaca oknem rysowaniem i pętl
 
         }
 
-        protected override void Update(GameTime gameTime) // akutalizacja symulaci co klatke
+        protected override void Update(GameTime gameTime) // akutalizacja symulacji co klatke
         {
             symulation.Update(gameTime);
 

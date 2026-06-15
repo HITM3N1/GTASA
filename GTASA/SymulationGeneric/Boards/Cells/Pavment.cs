@@ -9,19 +9,34 @@ using System.Collections.Generic;
 namespace GTASA.SymulationGeneric.Boards.Cells
 {
 
+    //**************************************************************************************//
+    //***** Klasa : Pavment - dziedziczy po Cell                                       *****//
+    //**************************************************************************************//
+    //***** Jedna z trzech rodzajów komórek dostępnych w symulacji, jest to komórka    *****//
+    //***** odpowiadająca za logikę wszystich chodników na mapie                       *****//
+    //**************************************************************************************//
+
     public class Pavment : Cell
     {
-        Random random = new Random();
+        // cords - przetrzymuje wekotr który jest koordynatami konkretnego chodnika
         private Vector2 cords;
+
+        // type - przechowuje typ komórki
         private CellType type;
+
+        // pavmentsNearby - przechowuje sąsiednie komórki w zależności od kierunku
         public Dictionary<int, Pavment> pavmentsNearby;
 
+        // isBuildingEntrace - sprawdza czy z chodnika da się wejść do budynku 
         private bool isBuildingEntrace;
-        private (int, Building) entrace;
 
+        // agentsInside - przechowuje agentów w środku
         private List<Agent> agentsInside;
 
+        // textureType - przechowuje rodzaj tekstury chodnika
         private TextureType textureType;
+
+        // Konstruktor - przypisujący podstawowe wartości przy tworzeniu
         public Pavment(Vector2 cords)
         {
             this.cords = cords;
@@ -30,7 +45,8 @@ namespace GTASA.SymulationGeneric.Boards.Cells
             this.isBuildingEntrace = false;
             this.agentsInside = new List<Agent>();
 
-            int r = Essentials.random.Next(0, 100);
+            // Losowanie konretnego typu tekstury chodnika 
+            int r = Essentials.RANDOM.Next(0, 100);
 
             if(r < 85)
             {
@@ -51,58 +67,59 @@ namespace GTASA.SymulationGeneric.Boards.Cells
 
         }
 
+        // Draw - rysuje teksture chodnika
+        public void Draw(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(Essentials.TEXTURES_PAVMENT[textureType], GetAbsolutPosition(), Color.White);
+        }
 
+
+        // GetAgents - zwraca listę agentów w środku komórki
         public List<Agent> GetAgents()
         {
             return agentsInside;
         }
 
+        // AddAgent - dodaje agenta do listy agentów w środku
         public void AddAgent(Agent agent)
         {
             agentsInside.Add(agent);
         }
 
+        // RemoveAgent - usuwa agent z listy agentów w środku
         public void RemoveAgent(Agent agent)
         {
             agentsInside.Remove(agent);
         }
 
-        public Vector2 GetSpawnAbsolutePosition()
-        {
-            return GetAbsolutPosition();
-        }
-
+        // GetAbsolutPosition - zwraca absolutna pozycje komórki
         public Vector2 GetAbsolutPosition()
         {
             return new Vector2(cords.X * 16 , cords.Y * 16);
         }
 
-        public void Draw(SpriteBatch spriteBatch)
-        {
-            spriteBatch.Draw(Essentials.texturesPavment[textureType], GetAbsolutPosition(), Color.White);
-        }
 
+        //GetCellType - zwraca typ komórki
         public CellType GetCellType()
         {
             return type;
         }
 
+
+        //IsBuildingEntrace - sprawdza czy jest wejście do budynku
         public bool IsBuildingEntrace()
         {
             return isBuildingEntrace;
         }
 
-        public void SetBuildingEntrace(int directionFromPavmentToBuilding, Building building)
-        {
-            entrace = (directionFromPavmentToBuilding, building);
-            isBuildingEntrace = true;
-        }
-
+        //SetNeighbor - ustawia sąsiadów komórki
         public void SetNeighbor(int direction ,Pavment cell)
         {
             pavmentsNearby[direction] = cell;
         }
 
+
+        // CallAgents - przywołuje agentów konretnej grupy w konretnym dystansie do siebie (algorymt Disktry)
         public void CallAgents(int k, Group group, Queue<Vector2> pathToTarget, HashSet<Pavment> visited)
         {
             foreach (Agent agent in agentsInside)
