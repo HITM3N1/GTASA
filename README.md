@@ -1,7 +1,7 @@
 ﻿# GTASA Simulation
 
  ---
-[DOCUMENTATION - CLICK HERE](https://hitm3n1.github.io/GTASA_DOC/) 
+[DOCUMENTATION - CLICK HERE](https://hitm3n1.github.io/GTASA_DOC_2/) 
  ---
 
 ## Project Description
