@@ -23,7 +23,7 @@ namespace GTASA.SymulationGeneric
         public readonly static Random RANDOM = new Random(SEED);
 
         // MAP_SIZE - rozmiar mapy gry  
-        public readonly static int MAP_SIZE = 15;
+        public readonly static int MAP_SIZE = 16;
 
         // PAVMENT_COUNT - ilość chodników horyzontalnych i wertykalnych.
         public readonly static int PAVMENT_COUNT = 2;
