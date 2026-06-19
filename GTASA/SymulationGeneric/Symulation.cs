@@ -30,8 +30,7 @@ namespace GTASA.SymulationGeneric
         // startPopulation - początkowa ilość wszystki agentów nazywana też początkową populacją
         private int startPopulation;
 
-        // cameraMatrix - Macierz obsługująca wyświetlanie oraz zoomowanie kamery.
-        Matrix cameraMatrix; 
+         
 
 
         
@@ -39,7 +38,7 @@ namespace GTASA.SymulationGeneric
         public Symulation()
         {
             Essentials.Initialize(); 
-            cameraMatrix = Matrix.CreateScale(Essentials.RENDER_ZOOM, Essentials.RENDER_ZOOM, 1f);
+            
 
             // Tworzenie obiektów klas.
             _gangs = new List<Gang>(); 
@@ -116,7 +115,7 @@ namespace GTASA.SymulationGeneric
         // Update - głowna funkcja graficzna, rozpoczyna rysowanie następnie wywołuje funkcje Draw na każdym obiekcie który ma swoją reprezentację graficzną.
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: cameraMatrix);
+            spriteBatch.Begin(samplerState: SamplerState.PointClamp);
             
             // WARSTWA 1 - MAPA
             _board.Draw(spriteBatch);

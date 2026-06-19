@@ -22,8 +22,12 @@ namespace GTASA.SymulationGeneric
         // RANDOM - obiekt tworzący wszystkie liczby losowe w grze.
         public readonly static Random RANDOM = new Random(SEED);
 
+        public static bool ULTRA_UI = true;
+
+        public static bool ULTRA_UI_Key = false;
+
         // MAP_SIZE - rozmiar mapy gry  
-        public readonly static int MAP_SIZE = 16;
+        public readonly static int MAP_SIZE = 30;
 
         // PAVMENT_COUNT - ilość chodników horyzontalnych i wertykalnych.
         public readonly static int PAVMENT_COUNT = 2;
@@ -33,9 +37,6 @@ namespace GTASA.SymulationGeneric
 
         // CELL_SIZE - rozmiar każdej kratki w pikselach
         public readonly static int CELL_SIZE = 16;
-
-        // RENDER_ZOOM - całkowity zoom powiększa lub pomniejsza okno
-        public readonly static float RENDER_ZOOM = 3f;
 
 
         public static class GroupSettings
@@ -193,6 +194,7 @@ namespace GTASA.SymulationGeneric
         // DIRECTIONS - przechowuje kierunek przemieszczanie się
         public static Dictionary<int, Vector2> DIRECTIONS = new Dictionary<int, Vector2>();
 
+        public static Texture2D background;
 
         //******************************************************************//
         //***** void Initialize() - inicjalizuje wartości klasy        *****//
@@ -266,6 +268,8 @@ namespace GTASA.SymulationGeneric
             TEXTURES_PAVMENT.Add(TextureType.P1, contentManager.Load<Texture2D>("P1"));
             TEXTURES_PAVMENT.Add(TextureType.P2, contentManager.Load<Texture2D>("P2"));
             TEXTURES_PAVMENT.Add(TextureType.P3, contentManager.Load<Texture2D>("P3"));
+
+            background = contentManager.Load<Texture2D>("background");
         }
     }
 
