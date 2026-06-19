@@ -5,6 +5,8 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using GTASA.SymulationGeneric;
+using GTASA.SymulationGeneric.Groups;
 
 namespace GTASA.SymulationGeneric.Groups.Agents
 {
@@ -110,6 +112,11 @@ namespace GTASA.SymulationGeneric.Groups.Agents
                 {
                     if ((float)gameTime.TotalGameTime.TotalSeconds - recrutationTimmer > Essentials.GroupSettings.TIME_TO_RECRUTE)
                     {
+                        if (group is Citizens && newOccupation is Gang gang)// sprwadzanie który gang przejął mieszkańca i zliczamy
+                        {
+                            SimulationStats.RegisterCitizenTakeover(gang.GetGangID()); 
+                        }
+
                         group = newOccupation;
                         UnlockAgent();
                     }

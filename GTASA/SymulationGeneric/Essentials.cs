@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.IO;
 using System.Collections.Generic;
 
 
@@ -36,6 +37,12 @@ namespace GTASA.SymulationGeneric
 
         // RENDER_ZOOM - całkowity zoom powiększa lub pomniejsza okno
         public readonly static float RENDER_ZOOM = 3f;
+
+        // RESULTS_PATH - miejce i nazwa pliku z wynikami
+        public static readonly string RESULTS_PATH = Path.Combine(
+            AppContext.BaseDirectory,
+            "wyniki_symulacji.json"
+        );
 
 
         public static class GroupSettings

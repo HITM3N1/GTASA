@@ -9,6 +9,7 @@ namespace GTASA
         private GraphicsDeviceManager _graphics; //ustawia okno gry
         private SpriteBatch _spriteBatch; //słuzy do rysowania tekstur
         private Symulation symulation; // przechowuje cała logikę gry
+        private bool hasShownResults = false;
 
         public Game1()   // Game1 nie zna szczegółów mapy, gangów ani agentów, on tylko aktulaizuje i rysuje
         {
@@ -40,6 +41,17 @@ namespace GTASA
         protected override void Update(GameTime gameTime) // akutalizacja symulacji co klatke
         {
             symulation.Update(gameTime);
+            if (symulation.IsFinished() && !hasShownResults)
+            {
+                hasShownResults = true;
+
+                System.Windows.Forms.MessageBox.Show(
+                    symulation.GetFinalResultText(),
+                    "Koniec symulacji"
+                );
+
+                Exit();
+            }
 
             base.Update(gameTime);
         }
