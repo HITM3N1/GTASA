@@ -264,7 +264,7 @@ namespace GTASA.SymulationGeneric.Groups
             }
 
 
-            if (!target.IsAttackEnded() || !target.IsPoliceInside()) // kontynuowanie ataku
+            if (!(target.IsAttackEnded() || target.IsPoliceInside())) // kontynuowanie ataku
             {
                 target.CallAgents(Essentials.GroupSettings.GANG_RADIUS_TO_ATTACK_BUILIDNG, this);
             }
@@ -299,6 +299,10 @@ namespace GTASA.SymulationGeneric.Groups
             }
 
             return buildingsUnderAttack;
+        }
+        public int GetGangID()
+        {
+            return gangID;
         }
     }
 }
