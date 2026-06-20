@@ -347,6 +347,10 @@ namespace GTASA.SymulationGeneric.Boards
         {
             this.citizens = citizens;
         }
+        public List<Building> GetBuildings()
+        {
+            return buildings;
+        }
 
 
 

@@ -300,5 +300,9 @@ namespace GTASA.SymulationGeneric.Groups
 
             return buildingsUnderAttack;
         }
+        public int GetGangID()
+        {
+            return gangID;
+        }
     }
 }

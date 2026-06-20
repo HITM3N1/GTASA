@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.IO;
 using System.Collections.Generic;
 
 
@@ -37,6 +38,13 @@ namespace GTASA.SymulationGeneric
 
         // CELL_SIZE - rozmiar każdej kratki w pikselach
         public readonly static int CELL_SIZE = 16;
+
+
+        // RESULTS_PATH - miejce i nazwa pliku z wynikami
+        public static readonly string RESULTS_PATH = Path.Combine(
+            AppContext.BaseDirectory,
+            "wyniki_symulacji.json"
+        );
 
 
         public static class GroupSettings

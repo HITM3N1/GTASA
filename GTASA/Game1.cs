@@ -10,6 +10,7 @@ namespace GTASA
         private GraphicsDeviceManager _graphics; //ustawia okno gry
         private SpriteBatch _spriteBatch; //słuzy do rysowania tekstur
         private Symulation symulation; // przechowuje cała logikę gry
+        private bool hasShownResults = false;
 
         RenderTarget2D plane;
         Rectangle plane_offset;
@@ -42,6 +43,17 @@ namespace GTASA
         protected override void Update(GameTime gameTime) // akutalizacja symulacji co klatke
         {
             symulation.Update(gameTime);
+            if (symulation.IsFinished() && !hasShownResults)
+            {
+                hasShownResults = true;
+
+                System.Windows.Forms.MessageBox.Show(
+                    symulation.GetFinalResultText(),
+                    "Koniec symulacji"
+                );
+
+                Exit();
+            }
 
             if (Keyboard.GetState().IsKeyDown(Keys.G))
             {
