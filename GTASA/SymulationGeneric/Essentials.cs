@@ -28,7 +28,7 @@ namespace GTASA.SymulationGeneric
         public static bool ULTRA_UI_Key = false;
 
         // MAP_SIZE - rozmiar mapy gry  
-        public readonly static int MAP_SIZE = 30;
+        public readonly static int MAP_SIZE = 15;
 
         // PAVMENT_COUNT - ilość chodników horyzontalnych i wertykalnych.
         public readonly static int PAVMENT_COUNT = 2;

@@ -55,9 +55,7 @@ namespace GTASA.SymulationGeneric
             Essentials.Initialize();
 
             SimulationStats.Reset(); // czyści statystyki
-   
-
-            cameraMatrix = Matrix.CreateScale(Essentials.RENDER_ZOOM, Essentials.RENDER_ZOOM, 1f);
+  
 
             // Tworzenie obiektów klas.
             _gangs = new List<Gang>(); 
@@ -98,6 +96,8 @@ namespace GTASA.SymulationGeneric
         // Update - głowna funkcja logiczna przetwarza wszytkie informacje i wywołuje Update wszystkich obiektów które potrzebują własnego przeliczenia.
         public void Update(GameTime gameTime)
         {
+            CheckEndCondition(gameTime);
+
             if (isFinished)
             {
                 return;
@@ -133,7 +133,7 @@ namespace GTASA.SymulationGeneric
             }
 
             _board.Update(gameTime);
-            CheckEndCondition(gameTime);
+            
         }
 
 
